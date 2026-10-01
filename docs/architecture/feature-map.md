@@ -3,6 +3,8 @@
 **Status:** Initial product-level boundaries; implementation packages and ownership depend on the selected stack.  
 **Rule:** Keep responsibilities and contracts identifiable. Do not make every row a separate service or compiled module by default.
 
+Track requirements and acceptance evidence in the [MVP coverage and traceability map](../product/mvp_coverage_and_traceability.md); this feature map assigns implementation ownership and dependency boundaries.
+
 | Feature ID | User capability | Main dependency/contracts | Initial release |
 |---|---|---|---|
 | `discover` | Browse/search curated examples and recipes. | `TemplateRecipe`, catalog repository | Small curated set; optional after core loop proves value |

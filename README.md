@@ -8,6 +8,7 @@ An early-stage project for analyzing short videos and turning their structure in
 - `src/videotemplate/` — Python video ingestion, decoding, source description, and template-recipe foundations.
 - `docs/` — product research, design prototype, architecture, and technical contracts.
 - [`docs/product/video_template_workflow_spec.md`](docs/product/video_template_workflow_spec.md) — detailed import, section review, replacement, preview, save, reuse, export, and validation workflow.
+- [`docs/product/mvp_coverage_and_traceability.md`](docs/product/mvp_coverage_and_traceability.md) — requirement coverage, release scenarios, open decisions, and implementation traceability.
 - `_s23_*` and `_s23_fixtures/` — reproducibility scripts, recorded evidence, and small media fixtures cited by the technical specifications and checks.
 
 ## Mobile app
