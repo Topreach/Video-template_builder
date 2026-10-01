@@ -7,6 +7,7 @@ An early-stage project for analyzing short videos and turning their structure in
 - `apps/mobile/` — Expo and React Native iOS/Android interface prototype. Import and preview flows are present; analysis, persistence, and rendering are not connected yet. See its [README](apps/mobile/README.md) for setup and current limits.
 - `src/videotemplate/` — Python video ingestion, decoding, source description, and template-recipe foundations.
 - `docs/` — product research, design prototype, architecture, and technical contracts.
+- [`docs/product/video_template_workflow_spec.md`](docs/product/video_template_workflow_spec.md) — detailed import, section review, replacement, preview, save, reuse, export, and validation workflow.
 - `_s23_*` and `_s23_fixtures/` — reproducibility scripts, recorded evidence, and small media fixtures cited by the technical specifications and checks.
 
 ## Mobile app

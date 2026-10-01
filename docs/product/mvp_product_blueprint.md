@@ -2,6 +2,7 @@
 
 **Status:** Product direction agreed; detailed requirements remain subject to user and technical validation  
 **Related research:** [Product strategy and competitive research](../research/product_strategy_and_competitive_research.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile frontend design specification](../design/mobile_frontend_design_spec.md), [account/security/monetization/editor scope research](../research/account_security_monetization_and_editor_scope.md), [software evolution and AI change-safety plan](../research/software_evolution_and_ai_change_safety.md)  
+**Detailed workflow:** [Video-to-template workflow specification](video_template_workflow_spec.md)
 **Product:** Mobile-first app that analyzes short reference videos, turns them into editable reusable templates, and exports template-based videos for users to download and finish in their preferred editor.
 
 ## 1. Product definition
