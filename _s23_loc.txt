@@ -1,0 +1,22 @@
+
+HandBrake 1.6.0 2023041600
+  literal bytes at absolute offset: 2233
+
+SomeOtherTool 9.9.9
+  literal bytes at absolute offset: 1840
+
+  27 boxes walked
+
+  CONTAINER 'HandBrake...' at 2233
+    contains: /moov/udta/meta/ilst  [2201..2259)  width 58
+    contains: /moov/udta/meta  [2156..2259)  width 103
+    contains: /moov/udta  [2148..2259)  width 111
+    contains: /moov  [1364..2259)  width 895
+
+  STREAM 'SomeOtherTool...' at 1840
+    contains: /moov/trak/mdia/minf/stbl/stsd  [1773..1948)  width 175
+    contains: /moov/trak/mdia/minf/stbl  [1765..2148)  width 383
+    contains: /moov/trak/mdia/minf  [1701..2148)  width 447
+    contains: /moov/trak/mdia  [1616..2148)  width 532
+
+  (c)too box at 2209 (size field 63, ends 2272)

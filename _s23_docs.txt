@@ -1,0 +1,6 @@
+stage2_1_contract_boundary.md          lines= 1205 headings=  85 fences= 28(OK) dup=0 ragged=0 split=0
+stage2_2_source_identity.md            lines=  886 headings=  50 fences= 10(OK) dup=0 ragged=0 split=0
+stage2_3_container_probe.md            lines= 4244 headings= 231 fences=146(OK) dup=0 ragged=0 split=0
+stage2_source_description.md           lines=  706 headings=  37 fences= 20(OK) dup=0 ragged=0 split=0
+
+403 headings across 4 files; 0 file(s) with structural problems

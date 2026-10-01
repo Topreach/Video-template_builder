@@ -1,0 +1,29 @@
+.F...                                                                    [100%]
+================================== FAILURES ===================================
+_ TestSampleAspectRatioOptional.test_declared_value_is_still_carried_verbatim _
+
+self = <tests.test_aspect_ratio_optional.TestSampleAspectRatioOptional testMethod=test_declared_value_is_still_carried_verbatim>
+
+    def test_declared_value_is_still_carried_verbatim(self):
+        """S-1 must not degrade the present case: a declared 4:3 must survive."""
+>       p = _clip(str(Path(self.tmp) / "anamorphic.mp4"), sar="4:3")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_aspect_ratio_optional.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_aspect_ratio_optional.py:33: in _clip
+    st.sample_aspect_ratio = sar
+    ^^^^^^^^^^^^^^^^^^^^^^
+av/stream.py:162: in av.stream.Stream.__setattr__
+    ???
+av/video/codeccontext.py:333: in av.video.codeccontext.VideoCodecContext.sample_aspect_ratio.__set__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+>   ???
+E   AttributeError: 'str' object has no attribute 'numerator'
+
+av/utils.py:58: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_aspect_ratio_optional.py::TestSampleAspectRatioOptional::test_declared_value_is_still_carried_verbatim
+1 failed, 4 passed in 0.42s

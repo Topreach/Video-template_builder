@@ -1,0 +1,26 @@
+T-R3b fixture build
+  base too atom   depth=4 size_field=37 atom_size=37
+  base payload    b'\x00\x00\x00\x1ddata\x00\x00\x00\x01\x00\x00\x00\x00Lavf62.12.102'
+  base            c:\Users\DELL\Video-template_builder\_s23_fixtures\t1_base.mp4
+  injected        c:\Users\DELL\Video-template_builder\_s23_fixtures\declared_real.mp4
+  delta           13 bytes
+  declared box    50 bytes
+  chunk offsets   0 patched
+  bytes contain   True
+  container meta  {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'HandBrake 1.6.0 2023041600'}
+  stream meta     {0: {'language': 'und', 'handler_name': 'VideoHandler'}}
+  box chain t1_base        OK
+  box chain declared_real  OK
+  frames decode   10 base / 10 injected
+  frames identical True
+
+two-scope conflict fixture
+  injected        c:\Users\DELL\Video-template_builder\_s23_fixtures\conflict_two_scope.mp4
+  delta           13 bytes
+  container meta  {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'HandBrake 1.6.0 2023041600'}
+  stream meta     {0: {'language': 'und', 'handler_name': 'VideoHandler', 'encoder': 'SomeOtherTool 9.9.9'}}
+  frames identical True
+  two scopes disagree True (container='HandBrake 1.6.0 2023041600' stream='SomeOtherTool 9.9.9')
+  box chain conflict_base  OK
+  box chain conflict       OK
+  VERDICT         OK

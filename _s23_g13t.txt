@@ -1,0 +1,49 @@
+==========================================================================
+Build: video track + audio track, each with a DISTINCT tag
+==========================================================================
+
+==========================================================================
+  wrote two_tracks.mkv
+  PyAV stream[0] type=video    ENCODER='TAG_ON_VIDEO_TRACK'
+  PyAV stream[1] type=audio    ENCODER='TAG_ON_AUDIO_TRACK'
+
+==========================================================================
+Read the physical identities
+==========================================================================
+  Segment [52..22440)   Tracks [299..521)
+  2 TrackEntry(s), in physical order
+
+  pos TrackNumber TrackType  tags found
+    0           1         1  []
+    1           2         2  []
+
+==========================================================================
+VERDICT
+==========================================================================
+  physical positions : 0..1
+  declared TrackNumbers: [1, 2]
+  -> TrackNumber is 1-BASED and position is 0-BASED; they DIFFER.
+     An address of `tracks/<n>/tags/<TAG>` resolves ONLY if <n> is the
+     POSITION. Writing TrackNumber there would address the wrong track
+     (or nothing) whenever the two diverge.
+Where do the two literals PHYSICALLY live?
+==========================================================================
+
+  TAG_ON_VIDEO_TRACK at offset 601
+    inside Segment child: Tags [527..742)
+
+  TAG_ON_AUDIO_TRACK at offset 688
+    inside Segment child: Tags [527..742)
+
+==========================================================================
+G13-T VERDICT
+==========================================================================
+  physical positions  : 0..1
+  declared TrackNumbers: [1, 2]
+  -> TrackNumber is 1-BASED; position is 0-BASED; THEY DIFFER.
+     `tracks/<n>` resolves ONLY with <n> = POSITION.
+
+  Tags elements INSIDE a TrackEntry: 0
+  -> PyAV's mkv muxer did NOT write these tags into TrackEntry/Tags.
+     G13-M row 6 (mkv track Tags ELIGIBLE) must therefore be
+     DOWNGRADED to UNLOCATED until the real location is established.

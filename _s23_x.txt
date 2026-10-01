@@ -1,0 +1,3 @@
+790 | > address the `sample_aspect_ratio` typing question (see §2.1.16.10), does not touch the code-set
+877 | | **S-4** | **No silent preference.** A producer MUST NOT select one retained value and emit the oth
+898 | | **UI / report** | SHOULD surface both values with their sources. Silently collapsing to one is the

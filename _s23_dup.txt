@@ -1,0 +1,23 @@
+==========================================================================
+STEP 1 — what PyAV's writer actually produces
+==========================================================================
+  ©too atom at: /moov/udta/meta/ilst/©too   (offset 2019, size 37)
+  PyAV container.metadata: {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+
+==========================================================================
+STEP 2 — inject a SECOND ©too at moov/udta/ (plain, not under meta/ilst)
+==========================================================================
+  udta created: False
+  ©too atom at: /moov/udta/meta/ilst/©too   (offset 2019, size 37)
+  ©too atom at: /moov/udta/©too   (offset 2056, size 40)
+  -> 2 physical ©too atom(s) in ONE artifact
+
+==========================================================================
+STEP 3 — re-read: what does the demuxer surface?
+==========================================================================
+  PyAV container.metadata: {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': '', 'encoder-rus': ''}
+
+  atom contents: [(True, False), (False, True)]
+
+  VALUE THE PROBE SEES: ''
+  the probe CANNOT tell which atom it read; 2 atoms exist but one value is observed.

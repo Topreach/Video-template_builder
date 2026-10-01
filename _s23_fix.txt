@@ -1,0 +1,2 @@
+cut block: lines 110..158 (49 lines)
+relocated and compiles OK

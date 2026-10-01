@@ -1,0 +1,32 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# JavaScript and mobile build output
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# Local secrets and environment settings
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local backup of the mobile app's former nested Git history
+.mobile-git-history-backup/
+
+# Local assistant tooling configuration
+apps/mobile/.claude/
+# Local captured command output
+_pytest_out.txt

@@ -1,0 +1,6 @@
+602 |'           f"{absent_is_not_unavailable}; nothing fabricated={no_synthetic}; "'
+603 |'           f"new REJ_* members={new_rej or \'none\'}")'
+604 |'           f"both malformations share one UNREADABLE group={grouped} "'
+605 |'           f"(not checkable until R-2 exists). "'
+606 |'           f"outcomes={{{\', \'.join(f\'{l}:{seen[l][\'outcome\']}\' for l in labels)}}}")'
+607 |''

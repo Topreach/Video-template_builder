@@ -1,0 +1,44 @@
+
+==========================================================================
+BASE (muxer-written, unmodified)  (2246 bytes)
+==========================================================================
+    /moov         at   1364 size=  882 ends=2246
+    /moov/mvhd         at   1372 size=  108 ends=1480
+    /moov/trak         at   1480 size=  668 ends=2148
+    /moov/udta         at   2148 size=   98 ends=2246
+    /moov/udta/meta         at   2156 size=   90 ends=2246
+    /moov/udta/meta/hdlr         at   2168 size=   33 ends=2201
+    /moov/udta/meta/ilst         at   2201 size=   45 ends=2246
+    /moov/udta/meta/ilst/©too         at   2209 size=   37 ends=2246
+  -> 0 structural problem(s)
+
+==========================================================================
+INJECTED (T-R3b container declaration)  (2259 bytes)
+==========================================================================
+    /moov         at   1364 size=  895 ends=2259
+    /moov/mvhd         at   1372 size=  108 ends=1480
+    /moov/trak         at   1480 size=  668 ends=2148
+    /moov/udta         at   2148 size=  111 ends=2259
+    /moov/udta/meta         at   2156 size=  103 ends=2259
+    /moov/udta/meta/hdlr         at   2168 size=   33 ends=2201
+    /moov/udta/meta/ilst         at   2201 size=   58 ends=2259
+    /moov/udta/meta/ilst/©too         at   2209 size=   50 ends=2259
+  -> 0 structural problem(s)
+
+==========================================================================
+The specific inconsistency, quantified
+==========================================================================
+  (c)too box at 2209, declared size 50
+  body actually holds the value at body offset 16
+  value length 26
+  -> iTunes payload = 8(data hdr) + 4(type) + 4(locale) + 26(value) = 42 bytes
+  -> so the box SHOULD be 8 + 42 = 50 bytes
+  -> declared 50, expected 50, DISCREPANCY 0
+
+  base (c)too declared size 37 for value 'Lavf62.12.102' (13 chars) -> expected 37
+  base box is therefore CONSISTENT
+
+==========================================================================
+VERDICT FOR R1.1
+==========================================================================
+  Both artifacts are structurally sound.

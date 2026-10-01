@@ -1,0 +1,10 @@
+== base state= ObservationState.CONFLICTING
+    container 'encoder' 'Lavf62.12.102' encoder muxer_authored
+    video_stream 'handler_name' 'VideoHandler' handler_name probe_observed
+== declared state= ObservationState.CONFLICTING
+    container 'encoder' 'HandBrake 1.6.0 2023041600' encoder artifact_declared
+    video_stream 'handler_name' 'VideoHandler' handler_name probe_observed
+== conflict state= ObservationState.CONFLICTING
+    container 'encoder' 'HandBrake 1.6.0 2023041600' encoder artifact_declared
+    video_stream 'handler_name' 'VideoHandler' handler_name probe_observed
+    video_stream 'encoder' 'SomeOtherTool 9.9.9' encoder artifact_declared

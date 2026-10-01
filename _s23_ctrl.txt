@@ -1,0 +1,36 @@
+==========================================================================
+CASE 1 — one declaration: plain moov/udta/<key>, writer's atom STRIPPED
+==========================================================================
+  stripped 37 byte(s) of (c)too the muxer had written itself
+
+CASE 1
+  physical (c)too atoms : 0  []
+  PyAV encoder         : None
+  other encoder* keys  : {}
+
+==========================================================================
+CASE 2 — two declarations, IDENTICAL values
+==========================================================================
+
+CASE 2
+  physical (c)too atoms : 2  ['/moov/udta/meta/ilst/©too', '/moov/udta/©too']
+  PyAV encoder         : ''
+  other encoder* keys  : {'encoder-smi': ''}
+
+==========================================================================
+CASE 3 — two declarations, DIFFERENT values
+==========================================================================
+
+CASE 3
+  physical (c)too atoms : 2  ['/moov/udta/meta/ilst/©too', '/moov/udta/©too']
+  PyAV encoder         : ''
+  other encoder* keys  : {'encoder-rus': ''}
+
+==========================================================================
+CASE 4 — two declarations, one MALFORMED payload
+==========================================================================
+
+CASE 4
+  physical (c)too atoms : 0  []
+  PyAV encoder         : ''
+  other encoder* keys  : {'encoder-por': ''}

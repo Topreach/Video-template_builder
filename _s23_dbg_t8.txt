@@ -1,0 +1,10 @@
+ingest OK
+  probe_state    = unreadable
+  producer_state = unavailable
+  format         = None
+
+A8 no_synthetic probe (decls empty AND version None required of EACH):
+  128 ASCII bytes    probe=unreadable       decls=0 version=None clean=True
+  24-byte header     probe=unreadable       decls=0 version=None clean=True
+  no video stream    probe=no_video_stream  decls=1 version=None clean=False
+       -> None = None origin='muxer_authored'

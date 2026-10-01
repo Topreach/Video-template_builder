@@ -1,0 +1,73 @@
+## PROBE IDENTITY (builder-side)
+  av.__version__      = '18.1.0'
+  av.library_versions = {'libavutil': (60, 26, 102), 'libavcodec': (62, 28, 102), 'libavformat': (62, 12, 102), 'libavdevice': (62, 3, 102), 'libavfilter': (11, 14, 102), 'libswscale': (9, 5, 102), 'libswresample': (6, 3, 102)}
+    libavcodec = 62.28.102
+    libavdevice = 62.3.102
+    libavfilter = 11.14.102
+    libavformat = 62.12.102
+    libavutil = 60.26.102
+    libswresample = 6.3.102
+    libswscale = 9.5.102
+  av.ffmpeg_version_info = '8.1.2'
+
+## FIXTURES (built as the test suite builds them)
+
+=== A  mp4, no tags written :: clip.mp4
+  format.name      = 'mov,mp4,m4a,3gp,3g2,mj2'
+  format.long_name = 'QuickTime / MOV'
+  format.flags     = 67141640
+  container.meta   = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+  duration(container) = 109000  bit_rate = 161541
+  stream[0] type='video' codec='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10'
+    stream.meta   = {'language': 'und', 'handler_name': 'VideoHandler'}
+    tb=Fraction(1, 16000) dur=1744 br=92697 profile='High'
+    160x120 pix='yuv420p' sar=None rate=Fraction(10000, 109)/Fraction(1000, 1)
+
+=== B  mkv, no tags written :: clip.mkv
+  format.name      = 'matroska,webm'
+  format.long_name = 'Matroska / WebM'
+  format.flags     = 0
+  container.meta   = {'ENCODER': 'Lavf62.12.102'}
+  duration(container) = 109000  bit_rate = 140183
+  stream[0] type='video' codec='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10'
+    stream.meta   = {'DURATION': '00:00:00.109000000'}
+    tb=Fraction(1, 1000) dur=None br=None profile='High'
+    160x120 pix='yuv420p' sar=None rate=Fraction(10, 1)/Fraction(10, 1)
+
+=== C  webm, libvpx :: clip.webm
+  format.name      = 'matroska,webm'
+  format.long_name = 'Matroska / WebM'
+  format.flags     = 0
+  container.meta   = {'ENCODER': 'Lavf62.12.102'}
+  duration(container) = 109000  bit_rate = 67669
+  stream[0] type='video' codec='vp8' long='On2 VP8'
+    stream.meta   = {'DURATION': '00:00:00.109000000'}
+    tb=Fraction(1, 1000) dur=None br=None profile=None
+    160x120 pix='yuv420p' sar=Fraction(1, 1) rate=Fraction(10, 1)/Fraction(10, 1)
+
+=== D  mp4, container+stream encoder tags declared :: declared.mp4
+  format.name      = 'mov,mp4,m4a,3gp,3g2,mj2'
+  format.long_name = 'QuickTime / MOV'
+  format.flags     = 67141640
+  container.meta   = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+  duration(container) = 109000  bit_rate = 161541
+  stream[0] type='video' codec='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10'
+    stream.meta   = {'language': 'und', 'handler_name': 'VideoHandler', 'encoder': 'Lavc61.3.100'}
+    tb=Fraction(1, 16000) dur=1744 br=92697 profile='High'
+    160x120 pix='yuv420p' sar=None rate=Fraction(10000, 109)/Fraction(1000, 1)
+
+=== E  truncated mp4 (malformed) :: truncated.mp4
+  PROBE FAILURE: InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'c:\\Users\\DELL\\Video-template_builder\\_s23_fixtures\\truncated.mp4'
+
+=== F  non-video bytes named .mp4 :: fake.mp4
+  PROBE FAILURE: InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'c:\\Users\\DELL\\Video-template_builder\\_s23_fixtures\\fake.mp4'
+
+## WHAT THE CONTRACT LAYER RECORDS (real ContainerInfo fields)
+  A: container.format='mp4' format_long='MOV MP4 MPEG-4 Raw' size=2201 source=layer=<SourceLayer.SOURCE_NATIVE: 'source_native'> model=None tool='PyAV' prov=[{'layer': <SourceLayer.SOURCE_NATIVE: 'source_native'>, 'evidence_refs': ['container_probe'], 'transform_type': 'none', 'confidence_delta': 0.0}]
+       ContainerInfo fields = ['format', 'format_long', 'provenance', 'size_bytes', 'source']
+       has container_id? False  has encoder anywhere? False
+  D declared-tags: container.format='mp4' format_long='MOV MP4 MPEG-4 Raw' size=2201 source=layer=<SourceLayer.SOURCE_NATIVE: 'source_native'> model=None tool='PyAV' prov=[{'layer': <SourceLayer.SOURCE_NATIVE: 'source_native'>, 'evidence_refs': ['container_probe'], 'transform_type': 'none', 'confidence_delta': 0.0}]
+       ContainerInfo fields = ['format', 'format_long', 'provenance', 'size_bytes', 'source']
+       has container_id? False  has encoder anywhere? False
+  E truncated: IngestionError(recoverable=False) Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'c:\\Users\\DELL\\Video-template_builder\\_s23_fixtures\\truncated.mp4'
+  F non-video: IngestionError(recoverable=False) Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'c:\\Users\\DELL\\Video-template_builder\\_s23_fixtures\\fake.mp4'

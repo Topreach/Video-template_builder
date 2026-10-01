@@ -1,0 +1,34 @@
+==========================================================================
+STEP 1 — baseline
+==========================================================================
+
+[base]
+  (c)too atoms : 1  ['/moov/udta/meta/ilst/©too(37)']
+  PyAV encoder : 'Lavf62.12.102'
+  OK expected 1 atom(s), chain intact
+
+==========================================================================
+STEP 2 — strip the writer's ilst atom
+==========================================================================
+  removed 37 byte(s)
+
+[stripped (no (c)too expected)]
+  (c)too atoms : 0  []
+  PyAV encoder : None
+  OK expected 0 atom(s), chain intact
+
+==========================================================================
+STEP 3 — add ONLY the plain moov/udta/<key> atom
+==========================================================================
+
+[plain udta ONLY]
+  (c)too atoms : 1  ['/moov/udta/©too(43)']
+  PyAV encoder : ''
+  OK expected 1 atom(s), chain intact
+
+==========================================================================
+VERDICT
+==========================================================================
+  NO  - the atom is present but the demuxer yields no usable value.
+       -> finding bytes there does NOT establish the probe would
+          observe it, so G13-M must EXCLUDE this path.

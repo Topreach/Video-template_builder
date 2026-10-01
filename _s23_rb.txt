@@ -1,0 +1,40 @@
+============================================================================
+R1 — PyAV writes stream metadata '©too' directly
+============================================================================
+  stream metadata
+      handler_name     = 'VideoHandler'
+      language         = 'und'
+
+============================================================================
+R2 — byte-injected trak/udta/©too, iTunes payload, locale variants
+============================================================================
+  locale=0
+      encoder          = 'Lavf62.12.102'
+      encoder-chi      = ''
+      handler_name     = 'VideoHandler'
+      language         = 'und'
+  locale=1
+      encoder          = 'Lavf62.12.102'
+      encoder-chi      = ''
+      handler_name     = 'VideoHandler'
+      language         = 'und'
+  locale=1033
+      encoder          = 'Lavf62.12.102'
+      encoder-chi      = ''
+      handler_name     = 'VideoHandler'
+      language         = 'und'
+
+============================================================================
+R3 — byte-injected trak/udta/<key-as-atom-name> (the shape `title` used)
+============================================================================
+  atom type 'encoder'
+      encoder          = 'Lavf62.12.102'
+      handler_name     = 'VideoHandler'
+      language         = 'und'
+
+============================================================================
+VERDICT
+============================================================================
+  A producer key is only usable if it comes back NON-EMPTY -- an empty
+  value is not a declaration (G13-E). Which routes returned a non-empty
+  stream 'encoder' is the question the rebuild depends on.

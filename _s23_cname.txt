@@ -1,0 +1,45 @@
+
+======================================================================
+conflict_two_scope.mp4
+======================================================================
+  stsd [1773..1948)  entry avc1 at 1789 size 159
+    width                  160
+    height                 120
+    frame_count            1
+    depth                  24
+    compressorname_raw     '13536f6d654f74686572546f6f6c2039'
+    compressorname_len     19
+    compressorname         'SomeOtherTool 9.9.9'
+
+======================================================================
+t1_base.mp4
+======================================================================
+  stsd [1773..1948)  entry avc1 at 1789 size 159
+    width                  160
+    height                 120
+    frame_count            1
+    depth                  24
+    compressorname_raw     '00000000000000000000000000000000'
+    compressorname_len     0
+    compressorname         '<invalid len>'
+
+======================================================================
+declared_real.mp4
+======================================================================
+  stsd [1773..1948)  entry avc1 at 1789 size 159
+    width                  160
+    height                 120
+    frame_count            1
+    depth                  24
+    compressorname_raw     '00000000000000000000000000000000'
+    compressorname_len     0
+    compressorname         '<invalid len>'
+
+======================================================================
+INTERPRETATION
+======================================================================
+  If `compressorname` carries producer text on the conflict fixture but a
+  normal codec name on the controls, then PyAV's mov muxer wrote a stream
+  metadata tag into the SAMPLE DESCRIPTION, not into a metadata box.
+  That makes track scope UNLOCATED as a metadata mechanism -- and it is
+  itself worth recording as an anomaly.

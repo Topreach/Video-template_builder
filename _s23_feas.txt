@@ -1,0 +1,52 @@
+
+============================================================================
+Q3  COVERAGE — which family does the A7 gate actually measure on?
+============================================================================
+    # A7 -- evidence traceability, measured against the §2.1.17 (v1.4) grammar.
+    path = _build_clip(os.path.join(tmp, "a7.mp4"))
+    # A7's subject: producer metadata traceable to artifact evidence. E-1 requires an
+    record("A7", "producer metadata traceable to artifact evidence",
+
+  _build_clip docstring: 'A minimal valid clip, built exactly the way the test suite builds them.'
+
+  Families the two-scope A7/T7 fixture is built from:
+    declared_real.mp4          exists=True
+    conflict_two_scope.mp4     exists=True
+    t1_base.mp4                exists=True
+
+============================================================================
+Q2  Does the existing probe architecture already walk container bytes?
+============================================================================
+    byte reads in ingestor       1
+    struct/atom parsing          0
+    container_format use         1
+    av.* only                    27
+  The ingestor uses PyAV for structure and never parses bytes itself.
+  An mp4 atom walk (as used in this measurement) is NOT present in src/.
+
+  ffmpeg CLI on PATH: None
+============================================================================
+Q1a  MP4 — where does PyAV's writer place a container `encoder` tag?
+============================================================================
+  value 'Lavf62.12.102' inside box: /moov/udta/meta/ilst/©too  (offset 2019, size 37)
+
+============================================================================
+Q1b  MP4 — can FFmpeg produce a SECOND atom layout for the same key?
+============================================================================
+  ffmpeg CLI NOT on PATH. Cannot synthesise a second mp4 atom layout,
+  so the mp4 non-determinism claim rests on the FORMAT (several legal
+  atom paths for one logical key) rather than on two observed files.
+
+============================================================================
+Q1c  MATROSKA — is the tag location structurally pinned?
+============================================================================
+  container tag bytes present : True
+  stream tag bytes present    : True
+  Info element 0x1549A966      : True
+  Tags element 0x1254C367      : True
+  Tags occurrences            : 2
+  Matroska spec: Tags live ONLY under Segment>Info or under a TrackEntry.
+  One structural home for a global tag -> the mapping is pinned by the
+  FORMAT, not by a muxer implementation detail.
+  PyAV container.metadata = {'ENCODER': 'Lavf62.12.102'}
+  PyAV stream.metadata    = {'ENCODER': 'StreamWriter33', 'DURATION': '00:00:01.000000000'}

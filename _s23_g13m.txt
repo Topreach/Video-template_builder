@@ -1,0 +1,31 @@
+==============================================================================
+1. MP4 TRACK-SCOPE — where does the two-scope fixture's stream tag live?
+==============================================================================
+
+  container 'HandBrake 1.6.0 2023041600'
+    /moov   (offset 1364, size 895)
+    /moov/udta   (offset 2148, size 111)
+    /moov/udta/meta   (offset 2156, size 103)
+    /moov/udta/meta/ilst   (offset 2201, size 58)
+
+  stream    'SomeOtherTool 9.9.9'
+    /moov   (offset 1364, size 895)
+    /moov/trak   (offset 1480, size 668)
+    /moov/trak/mdia   (offset 1616, size 532)
+    /moov/trak/mdia/minf   (offset 1701, size 447)
+
+  probe sees container.encoder = 'HandBrake 1.6.0 2023041600'
+  probe sees stream.encoder    = 'SomeOtherTool 9.9.9'
+
+==============================================================================
+2. MATROSKA — byte offset of each Tags element relative to its parent
+==============================================================================
+  Info element  offset : 69
+  Tracks element offset: 83
+  Tags element at     97  -> nearest parent: Info (global)
+     values inside: none within 400 bytes
+  Tags element at    444  -> nearest parent: Info (global)
+     values inside: ['TrackWriter 2.0']
+
+  probe container ENCODER = 'Lavf62.12.102'
+  probe stream ENCODER    = 'TrackWriter 2.0'

@@ -1,0 +1,36 @@
+============================================================================
+A. GENUINE EMPTY — a real (c)too whose value string is ''
+============================================================================
+
+A: genuine empty
+  run 1: encoder=''   siblings={'encoder-mlt': ''}
+  run 2: encoder=''   siblings={'encoder-mlt': ''}
+  run 3: encoder=''   siblings={'encoder-mlt': ''}
+
+============================================================================
+B. DEGRADATION — unreadable plain udta sibling (G13-P)
+============================================================================
+
+B: degradation
+  run 1: encoder=''   siblings={'encoder-iri': ''}
+  run 2: encoder=''   siblings={'encoder-iri': ''}
+  run 3: encoder=''   siblings={'encoder-iri': ''}
+
+============================================================================
+C. CONTROL — readable meta/ilst form
+============================================================================
+
+C: control
+  run 1: encoder='Lavf62.12.102'   siblings={}
+  run 2: encoder='Lavf62.12.102'   siblings={}
+  run 3: encoder='Lavf62.12.102'   siblings={}
+
+============================================================================
+VERDICT
+============================================================================
+  A genuine empty  : encoder values={''}  siblings={('encoder-mlt',)}
+  B degradation    : encoder values={''}  siblings={('encoder-iri',)}
+
+  A and B are INDISTINGUISHABLE at the contract surface.
+  -> "" cannot be trusted in either case; any rule must reject it
+     UNCONDITIONALLY rather than trying to detect the degradation.

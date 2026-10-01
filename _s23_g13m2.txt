@@ -1,0 +1,36 @@
+file: conflict_two_scope.mp4   size 2259
+literal SomeOtherTool 9.9.9 at absolute offset 1840
+
+==========================================================================
+1. Locate stsd via a path-aware walk (stsd never descended into)
+==========================================================================
+  stsd at 1773, size 175
+
+==========================================================================
+2. Parse stsd as a FullBox: version/flags(4) + entry_count(4)
+==========================================================================
+  version/flags = 0x00000000
+  entry_count   = 1
+  entry: format=avc1 at 1789 size 159
+
+==========================================================================
+3. Parse each sample entry header, then its child boxes
+==========================================================================
+
+  --- avc1 ---
+  raw bytes of entry header: 0000009f6176633100000000000000010000000000000000000000000000000000a00078004800000048000000000000000113536f6d654f74686572546f6f6c20392e392e390000000000000000
+
+==========================================================================
+4. Where does the literal actually sit? (exhaustive, no parsing)
+==========================================================================
+  literal offset: 1840
+  stsd range     : [1773..1948)
+  inside stsd    : True
+  inside entry avc1 [1789..1948): True
+
+==========================================================================
+VERDICT
+==========================================================================
+  The literal IS inside stsd -- but no child box of the sample entry
+  contains it, so it is not in a legal metadata mechanism. G13-M2 finds
+  NO producer-metadata mechanism there; track scope stays UNLOCATED.

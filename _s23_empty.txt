@@ -1,0 +1,10 @@
+declarations recorded: 3
+   scope=container    key=encoder        value=''
+   scope=container    key=encoder-rus    value=''
+   scope=video_stream key=handler_name   value='VideoHandler'
+producer_state: ObservationState.EXTRACTED
+
+EMPTY-VALUED declarations retained: 2
+  -> an empty string is being recorded as a producer declaration.
+     That is the same fabrication class as a sentinel: it asserts an
+     observation that was never made.

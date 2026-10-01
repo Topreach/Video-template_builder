@@ -1,0 +1,4 @@
+  line 795: '### 1. The finding (evidence, not preference)' -> '### 2.1.16.1 The finding (evidence, not preference)'
+  line 817: '### 2. Why the existing vocabulary cannot absorb it' -> '### 2.1.16.2 Why the existing vocabulary cannot absorb it'
+  line 842: '### 3. The amended vocabulary (normative)' -> '### 2.1.16.3 The amended vocabulary (normative)'
+renamed 3 heading(s) below '## 2.1.16 Controlled Amendment Record' (line 787)

@@ -1,0 +1,46 @@
+============================================================================
+1. What the demuxer surfaces for the stream
+============================================================================
+    encoder          = 'PRODUCER_STRING_X'
+    handler_name     = 'HANDLER_STRING_Y'
+    language         = 'und'
+    name             = 'TITLE_STRING_Z'
+
+============================================================================
+2. Where does each written STRING physically live?
+============================================================================
+  NOTE: stsd is NOT descended into here -- the walker's sample-entry
+  handling is invalid, which is exactly what G13-M2 established.
+
+  encoder        (PRODUCER_STRING_X) at offset 1606
+      inside /moov/trak/mdia/minf [1467..1962)
+      inside /moov/trak/mdia [1378..1962)
+      inside /moov/trak [1242..1992)
+
+  handler_name   (HANDLER_STRING_Y) at offset 1450
+      inside /moov/trak/mdia/hdlr [1418..1467)
+      inside /moov/trak/mdia [1378..1962)
+      inside /moov/trak [1242..1992)
+
+  title          (TITLE_STRING_Z) at offset 1978
+      inside /moov/trak/udta/name [1970..1992)
+      inside /moov/trak/udta [1962..1992)
+      inside /moov/trak [1242..1992)
+
+============================================================================
+3. Is there a legal trak/udta metadata atom at all?
+============================================================================
+  /moov/trak: 8 walked descendant(s)
+      /moov/trak/tkhd
+      /moov/trak/edts
+      /moov/trak/mdia
+      /moov/trak/mdia/mdhd
+      /moov/trak/mdia/hdlr
+      /moov/trak/mdia/minf
+      /moov/trak/udta
+      /moov/trak/udta/name
+
+============================================================================
+VERDICT
+============================================================================
+  a trak-scoped udta metadata atom exists : True

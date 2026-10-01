@@ -1,0 +1,71 @@
+==============================================================================
+1. The box chain containing the declaration
+==============================================================================
+  value 'HandBrake 1.6.0 2023041600' first occurs at byte offset 2233
+
+  /moov
+      type=b'moov' offset=1364 size=895 header=8  [CONTAINER]
+  /moov/udta
+      type=b'udta' offset=2148 size=111 header=8  [CONTAINER]
+  /moov/udta/meta
+      type=b'meta' offset=2156 size=103 header=12  [FULL-BOX container]
+  /moov/udta/meta/ilst
+      type=b'ilst' offset=2201 size=58 header=8  [CONTAINER]
+  /moov/udta/meta/ilst/©too
+      type=b'\xa9too' offset=2209 size=50 header=8  [ITEM (container of `data`)]
+  /moov/udta/meta/ilst/©too/data
+      type=b'data' offset=2217 size=42 header=8  [LEAF]
+
+==============================================================================
+2. Link classification along the chain
+==============================================================================
+  conduit  /moov
+  conduit  /moov/udta
+  conduit  /moov/udta/meta
+  conduit  /moov/udta/meta/ilst
+  conduit  /moov/udta/meta/ilst/©too
+  TERMINAL /moov/udta/meta/ilst/©too/data
+
+==============================================================================
+3. Path uniqueness — how many `data` boxes under the item?
+==============================================================================
+  item box /moov/udta/meta/ilst/©too at 2209 size 50
+      child b'data' at 2217 size 42   path /moov/udta/meta/ilst/©too/data
+  -> 1 child box(es); '.../©too/data' resolves UNIQUELY
+
+==============================================================================
+4. Payload vs value — is the `data` box body the observed value?
+==============================================================================
+  data box at 2217 size 42 header 8
+  body length           : 34
+  observed value length : 26
+  body hex              : 000000010000000048616e644272616b6520312e362e302032303233303431363030
+  value offset in body  : 8
+  body == value         : False
+  -> the box body is NOT the value; it carries a 8-byte
+     prefix: 0000000100000000  (well-known type + locale)
+     The address locates a CARRIER; the value starts INSIDE it at
+     an offset the address does not itself record.
+  value begins at absolute byte 2233
+
+==============================================================================
+5. Does the path hide structure? (`meta` is a FullBox)
+==============================================================================
+  /moov/udta/meta: version/flags = 0x00000000
+  -> 4 bytes that a plain path cannot express. A reader following
+     'moov/udta/meta/ilst/...' must KNOW meta is a FullBox, or
+     every offset beneath it is wrong by 4.
+
+==============================================================================
+R1.1 VERDICT
+==============================================================================
+  The path `moov/udta/meta/ilst/<key>/data` resolves to a `data` box,
+  which is a PAYLOAD CARRIER inside the ilst ITEM box that is the
+  declaration object. Three findings make them non-equivalent:
+    (a) the ITEM box is the declaration; `data` is inside it;
+    (b) the `data` body is NOT the value - an 8-byte prefix precedes it;
+    (c) `meta` is a FullBox, so the path alone does not fix the offsets.
+  Identity of the REPORTED declaration is therefore NOT established by
+  the path alone. Value identity (R1.3) and encoding (R1.6) must carry
+  part of it, and the address grammar must decide whether the item box
+  or the data box is the addressed object.

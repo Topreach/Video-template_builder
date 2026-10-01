@@ -1,0 +1,58 @@
+.........F.F.FF                                                       [100%]
+================================== FAILURES ===================================
+_ TestTwoScopeFixture.test_s7_conflict_does_not_license_an_inferred_producer __
+
+self = <tests.test_conflicting_state.TestTwoScopeFixture testMethod=test_s7_conflict_does_not_license_an_inferred_producer>
+
+    def test_s7_conflict_does_not_license_an_inferred_producer(self):
+        """S-7: observing a disagreement is not evidence about which producer is real.
+    
+        The two retained values stay two. Neither is promoted into `SourceInfo.version`,
+        and no third value is synthesised to resolve the dispute.
+        """
+        values = {d.original_value for d in self.info.producer_declarations}
+>       self.assertEqual(len(values), 2, "the dispute must not be silently collapsed")
+E       AssertionError: 3 != 2 : the dispute must not be silently collapsed
+
+tests\test_conflicting_state.py:174: AssertionError
+__ TestTwoScopeFixture.test_tc2_fixture_retains_both_scopes_and_both_values ___
+
+self = <tests.test_conflicting_state.TestTwoScopeFixture testMethod=test_tc2_fixture_retains_both_scopes_and_both_values>
+
+    def test_tc2_fixture_retains_both_scopes_and_both_values(self):
+        """S-3/S-4: the disputed value is retained, not dropped or silently preferred."""
+        decls = self.info.producer_declarations
+>       self.assertEqual(len(decls), 2)
+E       AssertionError: 3 != 2
+
+tests\test_conflicting_state.py:151: AssertionError
+______________ TestNoRegression.test_plain_base_has_no_conflict _______________
+
+self = <tests.test_conflicting_state.TestNoRegression testMethod=test_plain_base_has_no_conflict>
+
+    def test_plain_base_has_no_conflict(self):
+        if not BASE.exists():
+            self.skipTest("base fixture not built")
+        info = self.ing.ingest(str(BASE)).container
+>       self.assertNotEqual(info.producer_state, ObservationState.CONFLICTING)
+E       AssertionError: <ObservationState.CONFLICTING: 'conflicting'> == <ObservationState.CONFLICTING: 'conflicting'>
+
+tests\test_conflicting_state.py:197: AssertionError
+___ TestNoRegression.test_single_scope_fixture_is_extracted_not_conflicting ___
+
+self = <tests.test_conflicting_state.TestNoRegression testMethod=test_single_scope_fixture_is_extracted_not_conflicting>
+
+    def test_single_scope_fixture_is_extracted_not_conflicting(self):
+        if not DECLARED.exists():
+            self.skipTest("declared fixture not built")
+        info = self.ing.ingest(str(DECLARED)).container
+>       self.assertEqual(info.producer_state, ObservationState.EXTRACTED)
+E       AssertionError: <ObservationState.CONFLICTING: 'conflicting'> != <ObservationState.EXTRACTED: 'extracted'>
+
+tests\test_conflicting_state.py:190: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_conflicting_state.py::TestTwoScopeFixture::test_s7_conflict_does_not_license_an_inferred_producer
+FAILED tests/test_conflicting_state.py::TestTwoScopeFixture::test_tc2_fixture_retains_both_scopes_and_both_values
+FAILED tests/test_conflicting_state.py::TestNoRegression::test_plain_base_has_no_conflict
+FAILED tests/test_conflicting_state.py::TestNoRegression::test_single_scope_fixture_is_extracted_not_conflicting
+4 failed, 11 passed, 3 subtests passed in 0.33s

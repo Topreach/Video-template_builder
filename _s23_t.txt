@@ -1,0 +1,89 @@
+105 |     af.pts = i * 1024
+106 |     for p in a.encode(af):
+107 |         c.mux(p)
+108 | print()
+109 | print("=" * 74)
+110 | print("Where do the two literals PHYSICALLY live?")
+111 | print("=" * 74)
+112 | for label, needle in (("TAG_ON_VIDEO_TRACK", b"TAG_ON_VIDEO_
+---
+151 | for _i, (_eid, s, e) in enumerate(entries):
+152 |     per_track_tags += sum(1 for cid, _cs, _ce in children(bu
+153 |                           if cid == ID["Tags"])
+154 | print(f"  Tags elements INSIDE a TrackEntry: {per_track_tags
+155 | if per_track_tags == 0:
+156 |     print("  -> PyAV's mkv muxer did NOT write these tags in
+157 |     print("     G13-M row 6 (mkv track Tags ELIGIBLE) must t
+158 |     print("     DOWNGRADED to UNLOCATED until the real locat
+159 | 
+160 | for p in v.encode(None):
+161 |     c.mux(p)
+162 | for p in a.encode(None):
+163 |     c.mux(p)
+164 | c.close()
+165 | print(f"  wrote {os.path.basename(path)}")
+166 | 
+167 | c = av.open(path)
+168 | for i, s in enumerate(c.streams):
+169 |     tag = dict(s.metadata).get("ENCODER")
+170 |     print(f"  PyAV stream[{i}] type={s.type:8s} ENCODER={tag
+171 | c.close()
+172 | 
+173 | print()
+174 | print("=" * 74)
+175 | print("Read the physical identities")
+176 | print("=" * 74)
+177 | buf = open(path, "rb").read()
+178 | seg = descend(buf, 0, len(buf), ID["Segment"])
+179 | tracks = descend(buf, seg[0], seg[1], ID["Tracks"])
+180 | print(f"  Segment [{seg[0]}..{seg[1]})   Tracks [{tracks[0]}
+181 | 
+182 | entries = [c for c in children(buf, tracks[0], tracks[1])
+183 |            if c[0] == ID["TrackEntry"]]
+184 | print(f"  {len(entries)} TrackEntry(s), in physical order\n"
+185 | 
+186 | print(f"  {'pos':>3} {'TrackNumber':>11} {'TrackType':>9}  t
+187 | for pos, (eid, s, e) in enumerate(entries):
+188 |     tnum, ttype = None, None
+189 |     tags = []
+190 |     for cid, cs, ce in children(buf, s, e):
+191 |         if cid == ID["TrackNumber"]:
+192 |             tnum = int.from_bytes(buf[cs:ce], "big")
+193 |         elif cid == ID["TrackType"]:
+194 |             ttype = int.from_bytes(buf[cs:ce], "big")
+195 |         elif cid == ID["Tags"]:
+196 |             # SimpleTag -> TagName / TagString
+197 |             for tid, ts, te in children(buf, cs, ce):
+198 |                 if tid != ID["Tag"]:
+199 |                     continue
+200 |                 name, value = None, None
+201 |                 for sid, ss, se in children(buf, ts, te):
+202 |                     if sid == ID["SimpleTag"]:
+203 |                         for kid, ks, ke in children(buf, ss,
+204 |                             if kid == ID["TagName"]:
+205 |                                 name = buf[ks:ke].decode("ut
+206 |                             elif kid == ID["TagString"]:
+207 |                                 value = buf[ks:ke].decode("u
+208 |                 if name:
+209 |                     tags.append(f"{name}={value!r}")
+210 |     print(f"  {pos:>3} {tnum!s:>11} {ttype!s:>9}  {tags}")
+211 | 
+212 | print()
+213 | print("=" * 74)
+214 | print("VERDICT")
+215 | print("=" * 74)
+216 | nums = [int.from_bytes(
+217 |     buf[c[1]:c[2]], "big")
+218 |     for e in entries for c in children(buf, e[1], e[2])
+219 |     if c[0] == ID["TrackNumber"]]
+220 | print(f"  physical positions : 0..{len(entries) - 1}")
+221 | print(f"  declared TrackNumbers: {nums}")
+222 | if nums == list(range(1, len(entries) + 1)):
+223 |     print("  -> TrackNumber is 1-BASED and position is 0-BAS
+224 |     print("     An address of `tracks/<n>/tags/<TAG>` resolv
+225 |     print("     POSITION. Writing TrackNumber there would ad
+226 |     print("     (or nothing) whenever the two diverge.")
+227 | else:
+228 |     print(f"  -> TrackNumbers {nums} do not equal 1..n; posi
+229 |     print("     unambiguous index.")
+230 | 

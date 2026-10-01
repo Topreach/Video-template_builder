@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import io;L=io.open('docs/specs/stage2_1_contract_boundary.md',encoding='utf-8').read().split(chr(10));[print(i+1,'|',L[i][:80]) for i in range(780,len(L)) if L[i].startswith('#')]
+                                                                                                            ~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 45: character maps to <undefined>
+787 | 

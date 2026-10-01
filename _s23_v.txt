@@ -1,0 +1,8 @@
+29 | > `stage2_source_description`'s Amendment Records v1.1/v1.2 (§V.7.3); **A8** and **T8**
+30 | > after 2.15 implemented §V.1 R-2 (§V.7.3). Every one was **re-measured by a re-run
+2832 | | A8 | **`PASS`** — re-measured | 2.3 spec (§V.1) · implementation 2.15 | `DISCHARGED` | None. R-2 implemented; see §V.7
+2921 | ### V.7.3 A9 — discharged, and the false green it briefly produced
+2966 | ### V.7.3 G18 discharged — R-2 implemented, and the evidence for it
+3091 | | **A9** | **DISCHARGED** | G10 | `stage2_source_description` Amendment Records **v1.1** (SAR) + **v1.2** (DAR) | — | **
+3205 | Both were green-or-failing for reasons other than the truth. See V.7.3.
+3216 | (S V.1) owns the wording. NOT silently changed. See V.7.3.

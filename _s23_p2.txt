@@ -1,0 +1,33 @@
+75 |     toos = [n for n in names if "too" in n]
+76 |     c = av.open(path)
+77 |     md = dict(c.metadata)
+78 |     c.close()
+79 |     print(f"\n[{label}]")
+80 |     print(f"  (c)too atoms : {len(toos)}  {toos}")
+81 |     print(f"  PyAV encoder : {md.get('encoder')!r}")
+82 | 
+83 | 
+84 | def moov_range(buf):
+85 |     m = buf.find(b"moov") - 4
+86 |     return m, struct.unpack(">I", buf[m:m + 4])[0]
+87 | 
+88 | 
+89 | def child(buf, start, end, want):
+90 |     pos = start
+91 |     while pos + 8 <= end:
+92 |         size = struct.unpack(">I", buf[pos:pos + 4])[0]
+---TAIL---
+207 |     print("       -> legitimate locator target; G13-M may include it.")
+208 | elif atoms == 1 and enc in ("", None):
+209 |     print("  NO  - the atom is present but the demuxer yields no usable 
+210 |     print("       -> finding bytes there does NOT establish the probe wo
+211 |     print("          observe it, so G13-M must EXCLUDE this path.")
+212 | else:
+213 |     print(f"  INCONCLUSIVE - {atoms} atom(s), encoder={enc!r}. Do not ci
+214 | 
+215 |     if bad:
+216 |         print(f"  !! CHAIN BROKEN at {bad}")
+217 |     ok = len(toos) == expect and not bad
+218 |     print(f"  {'OK ' if ok else '!! '}expected {expect} atom(s), chain i
+219 |     return ok, len(toos), md.get("encoder")
+220 | 

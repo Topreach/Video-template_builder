@@ -1,0 +1,24 @@
+container.metadata : {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'HandBrake 1.6.0 2023041600'}
+stream.metadata    : {'language': 'und', 'handler_name': 'VideoHandler', 'encoder': 'SomeOtherTool 9.9.9'}
+
+container attributes that might carry a location:
+   metadata                     dict
+   metadata_encoding            str
+   metadata_errors              str
+
+stream attributes that might carry a location:
+   disposition                  Disposition
+   metadata                     dict
+
+mkv container.metadata: {'ENCODER': 'Lavf62.12.102'}
+mkv exposes a location attribute: []
+SUCCESS (valid)          probe_state=None               producer_state=extracted    format=mp4          decls=2 src_version=None
+                         groups never reached: video_stream=False fps=False cfr=False dur=False qs=False
+UNREADABLE (garbage)     probe_state=unreadable         producer_state=unavailable  format=None         decls=0 src_version=None
+                         groups never reached: video_stream=True fps=True cfr=True dur=True qs=True
+UNREADABLE (truncated)   probe_state=unreadable         producer_state=unavailable  format=None         decls=0 src_version=None
+                         groups never reached: video_stream=True fps=True cfr=True dur=True qs=True
+NO_VIDEO_STREAM          probe_state=no_video_stream    producer_state=unavailable  format=matroska,webm decls=1 src_version=None
+                         groups never reached: video_stream=True fps=True cfr=True dur=True qs=True
+REJECTED_BY_POLICY       probe_state=rejected_by_policy producer_state=unavailable  format=mp4          decls=2 src_version=None
+                         groups never reached: video_stream=True fps=True cfr=True dur=True qs=True

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f8">
+  <title>Remix — Mobile workflow prototype</title>
+  <link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+  <main class="stage">
+    <div class="prototype-note"><span class="prototype-dot"></span> INTERACTIVE PRODUCT CONCEPT <span>•</span> not production software</div>
+    <div class="device">
+      <div class="status-bar"><span>9:41</span><span>● ● ● ▰</span></div>
+      <header class="app-header">
+        <button class="icon-button back-button" aria-label="Go back" hidden>‹</button>
+        <a class="wordmark" href="#discover" aria-label="Remix home"><span class="brand-mark">r</span>remix<span class="brand-period">.</span></a>
+        <button class="avatar" aria-label="Open profile">A</button>
+      </header>
+
+      <section class="screen active" id="screen-discover" data-screen="discover">
+        <div class="screen-scroll">
+          <div class="eyebrow">YOUR NEXT VIDEO STARTS HERE</div>
+          <h1>Make the moment<br>your own.</h1>
+          <p class="lede">Turn a video you love into a reusable recipe for your next one.</p>
+          <button class="primary wide" data-go="import"><span class="button-icon">＋</span> Create from a video <span class="arrow">→</span></button>
+          <button class="secondary wide" data-go="library"><span class="button-icon">✳</span> Start with an idea</button>
+
+          <div class="section-heading"><div><span class="eyebrow">A LITTLE INSPIRATION</span><h2>Recipes to remix</h2></div><button class="text-button" data-go="library">See all</button></div>
+          <div class="category-row" aria-label="Template categories">
+            <button class="chip selected">For you</button><button class="chip">Funny</button><button class="chip">Music</button><button class="chip">Story</button>
+          </div>
+          <div class="recipe-grid">
+            <button class="recipe-card" data-go="recipe">
+              <span class="recipe-art art-peach"><span class="play">▶</span><span class="art-label">THE REVEAL</span></span>
+              <span class="recipe-name">Wait for it…</span><span class="recipe-meta">Funny · 12 sec · 3 clips</span>
+            </button>
+            <button class="recipe-card" data-go="recipe">
+              <span class="recipe-art art-blue"><span class="play">▶</span><span class="art-label">THEN / NOW</span></span>
+              <span class="recipe-name">Two sides of me</span><span class="recipe-meta">Story · 18 sec · 4 clips</span>
+            </button>
+          </div>
+          <div class="local-note"><span>◉</span><div><b>Your ideas stay yours.</b><br>Start privately. Sign in only when you want cloud backup.</div><button class="dismiss" aria-label="Dismiss note">×</button></div>
+        </div>
+        <nav class="tab-bar" aria-label="Main navigation"><button class="tab active" data-tab="discover"><span>⌂</span>Discover</button><button class="tab" data-tab="create" data-go="import"><span class="create-tab">＋</span>Create</button><button class="tab" data-tab="library" data-go="library"><span>▤</span>My recipes</button><button class="tab" data-tab="profile" data-go="profile"><span>○</span>Profile</button></nav>
+      </section>
+
+      <section class="screen" id="screen-import" data-screen="import">
+        <div class="screen-scroll flow-screen">
+          <div class="step-label"><span class="step-num">01</span> START WITH A REFERENCE</div>
+          <h1>Bring the video.<br>Keep the good parts.</h1>
+          <p class="lede">We’ll map its moments so you can choose what stays, changes, or goes.</p>
+          <div class="upload-zone">
+            <div class="upload-icon">↑</div><strong>Choose a video</strong><span>From your device · up to 30 seconds</span>
+            <button class="secondary compact" id="choose-video">Choose from library</button>
+          </div>
+          <div class="or-divider"><span>OR</span></div>
+          <button class="outline wide" data-go="recipe">Explore a sample video <span class="arrow">→</span></button>
+          <div class="privacy-card"><span class="privacy-icon">◇</span><div><b>Private by default</b><p>Your reference is used to find the structure. It won’t become a public template.</p></div></div>
+          <button class="text-button rights-link" data-toast="Use videos you have permission to analyze and adapt.">How we handle rights and privacy</button>
+        </div>
+        <div class="sticky-footer"><button class="primary wide" id="analyze-button" disabled>Analyze video <span>→</span></button><span class="footer-caption">Nothing is changed until you confirm.</span></div>
+      </section>
+
+      <section class="screen" id="screen-review" data-screen="review">
+        <div class="screen-scroll flow-screen review-screen">
+          <div class="step-label"><span class="step-num">02</span> YOUR REMIX MAP</div>
+          <h1>Shape the story.</h1>
+          <p class="lede">We found 4 moments. Choose what to change, keep, or leave out.</p>
+          <div class="video-preview demo-preview"><div class="preview-top"><span class="live-dot"></span> REFERENCE PREVIEW <button class="sound-toggle">♫</button></div><div class="demo-person">✦</div><div class="preview-caption">Wait… what?</div><button class="big-play" aria-label="Play preview">▶</button><div class="preview-bottom"><span>00:04</span><span class="progress-track"><i></i></span><span>00:17</span></div></div>
+          <div class="map-summary"><div><b>4 moments</b><span> · 17 sec total</span></div><button class="text-button" id="fine-tune">Fine-tune timing</button></div>
+          <div class="compact-timeline" id="compact-timeline"><span style="flex:1.1"></span><span style="flex:1.7"></span><span style="flex:.8"></span><span style="flex:1.2"></span></div>
+          <div class="section-list">
+            <article class="moment-card" data-moment="1"><div class="moment-thumb thumb-one"><span>01</span></div><div class="moment-content"><div class="moment-top"><b>The hook</b><span class="timecode">0:00–0:03</span></div><p>Close-up, then a quick look to camera.</p><div class="confidence">◉ Boundary looks clear</div><div class="moment-actions"><button class="decision edit selected" data-decision="edit">Edit</button><button class="decision" data-decision="keep">Keep</button><button class="decision" data-decision="exclude">Exclude</button></div></div></article>
+            <article class="moment-card" data-moment="2"><div class="moment-thumb thumb-two"><span>02</span></div><div class="moment-content"><div class="moment-top"><b>The setup</b><span class="timecode">0:03–0:08</span></div><p>Builds anticipation before the reveal.</p><div class="confidence uncertain">◌ Check this cut · maybe 0:07</div><div class="moment-actions"><button class="decision edit selected" data-decision="edit">Edit</button><button class="decision" data-decision="keep">Keep</button><button class="decision" data-decision="exclude">Exclude</button></div></div></article>
+            <article class="moment-card" data-moment="3"><div class="moment-thumb thumb-three"><span>03</span></div><div class="moment-content"><div class="moment-top"><b>The reveal</b><span class="timecode">0:08–0:13</span></div><p>The main reaction. Keep the timing, change the scene.</p><div class="confidence">◉ Boundary looks clear</div><div class="moment-actions"><button class="decision edit selected" data-decision="edit">Edit</button><button class="decision" data-decision="keep">Keep</button><button class="decision" data-decision="exclude">Exclude</button></div></div></article>
+            <article class="moment-card" data-moment="4"><div class="moment-thumb thumb-four"><span>04</span></div><div class="moment-content"><div class="moment-top"><b>Attached outro</b><span class="timecode">0:13–0:17</span></div><p>Looks like an ending card from the original post.</p><div class="confidence uncertain">◌ App suggestion · review it</div><div class="moment-actions"><button class="decision edit" data-decision="edit">Edit</button><button class="decision" data-decision="keep">Keep</button><button class="decision selected danger" data-decision="exclude">Exclude</button></div></div></article>
+          </div>
+          <button class="add-moment" id="add-moment">＋ Add or split a moment</button>
+          <div class="privacy-card small"><span class="privacy-icon">✓</span><div><b>Your choice wins</b><p>Suggestions are never applied automatically.</p></div></div>
+        </div>
+        <div class="sticky-footer"><button class="primary wide" data-go="adapt">Review replacement ideas <span>→</span></button><span class="footer-caption"><span id="included-count">3</span> moments included · <span id="runtime-count">13 sec</span> preview</span></div>
+      </section>
+
+      <section class="screen" id="screen-adapt" data-screen="adapt">
+        <div class="screen-scroll flow-screen">
+          <div class="step-label"><span class="step-num">03</span> MAKE IT YOURS</div>
+          <h1>Keep the rhythm.<br>Change the scene.</h1>
+          <p class="lede">Ideas for <b>The reveal</b>. Pick one, change it, or skip for now.</p>
+          <div class="suggestion-feature"><div class="suggestion-scene"><span class="scene-tag">SUGGESTED SHOT</span><div class="scene-spark">✦</div><span class="scene-copy">YOUR PRODUCT<br>IN THE SPOTLIGHT</span></div><div class="suggestion-copy"><span class="idea-label">IDEA 01 · YOUR FOOTAGE</span><h3>Show your product<br>in the reveal.</h3><p>It keeps the visual payoff, but makes this moment yours.</p><button class="primary compact" id="use-idea">Use this idea <span>→</span></button></div></div>
+          <div class="other-options"><button class="option-card" data-toast="Choose a clip from your device to fill this moment."><span class="option-icon">▣</span><b>My video or photo</b><small>Pick something you own</small><span class="option-arrow">↗</span></button><button class="option-card" data-toast="A licensed media library can be added after rights and catalog choices are researched."><span class="option-icon">◎</span><b>Browse licensed media</b><small>See usage rights first</small><span class="option-arrow">↗</span></button></div>
+          <div class="edit-row"><div><b>Words & sound</b><p>Change the caption, audio, or both.</p></div><button class="secondary compact" id="open-edit-tools">Edit <span>→</span></button></div>
+          <div class="mini-tools" id="mini-tools" hidden><label>New caption<input value="Plot twist: it’s mine." aria-label="Caption text"></label><div class="tool-toggle"><span>Original sound</span><button class="toggle" aria-label="Mute original sound"><i></i></button></div><button class="text-button" data-toast="Audio sources and usage rights will be shown before export.">Choose replacement sound →</button></div>
+          <div class="rights-hint"><span>ⓘ</span><span>Changing a sound or caption doesn’t automatically clear rights to the rest of a video.</span></div>
+        </div>
+        <div class="sticky-footer"><button class="primary wide" data-go="template-preview">Preview template <span>→</span></button><span class="footer-caption">You can edit every choice later.</span></div>
+      </section>
+
+      <section class="screen" id="screen-template-preview" data-screen="template-preview">
+        <div class="screen-scroll flow-screen">
+          <div class="step-label"><span class="step-num">04</span> TEMPLATE PREVIEW</div>
+          <h1>Here’s your recipe.</h1>
+          <p class="lede">A reusable structure, ready for a fresh take.</p>
+          <div class="video-preview recipe-preview"><div class="preview-top"><span class="preview-pill">YOUR TEMPLATE</span><button class="sound-toggle">♫</button></div><div class="recipe-frame"><div class="frame-sun"></div><span>YOUR MOMENT<br>GOES HERE</span></div><button class="big-play" aria-label="Play template preview">▶</button><div class="preview-bottom"><span>00:04</span><span class="progress-track"><i></i></span><span>00:13</span></div></div>
+          <div class="preview-modes"><button class="mode active" data-mode="template">Template structure</button><button class="mode" data-mode="reference">Reference</button></div>
+          <div class="recipe-stats"><div><span>RUNTIME</span><b>13 sec</b></div><div><span>REPLACEABLE MOMENTS</span><b>3 sections</b></div><div><span>FORMAT</span><b>Vertical 9:16</b></div></div>
+          <div class="included-box"><div class="included-head"><b>In this template</b><span>3 of 4 moments</span></div><div class="included-line"><span class="check">✓</span><span>The hook</span><small>Replaceable</small></div><div class="included-line"><span class="check">✓</span><span>The setup</span><small>Replaceable</small></div><div class="included-line"><span class="check">✓</span><span>The reveal</span><small>Replaceable</small></div><div class="excluded-line"><span>–</span><span>Attached outro</span><small>Excluded</small></div></div>
+          <button class="profile-select" id="profile-select"><span><small>PREVIEW FOR</small><b>Vertical social · 9:16</b></span><span>⌄</span></button>
+          <div class="safe-area"><div class="safe-phone"><div class="safe-top">Creator · audio</div><div class="safe-message">Keep text in this area</div><div class="safe-bottom">♡　◉　➤　Caption…</div></div><span>Interface overlays are guidance.<br>Check in the destination app.</span></div>
+          <div class="rights-hint"><span>◇</span><span>This is a private recipe. Only your new video will be exported.</span></div>
+        </div>
+        <div class="sticky-footer"><button class="primary wide" id="save-recipe">Save my template <span>→</span></button><span class="footer-caption">Keep it private · edit it whenever you want</span></div>
+      </section>
+
+      <section class="screen" id="screen-library" data-screen="library">
+        <div class="screen-scroll">
+          <div class="eyebrow">BUILT FOR YOUR NEXT TAKE</div><h1>Templates with<br>a point of view.</h1><p class="lede">A small collection of reusable creative structures.</p>
+          <div class="search-field">⌕ <span>Search by idea or format</span></div>
+          <div class="category-row"><button class="chip selected">All</button><button class="chip">Funny</button><button class="chip">Music</button><button class="chip">Story</button></div>
+          <div class="recipe-grid expanded"><button class="recipe-card" data-go="recipe"><span class="recipe-art art-peach"><span class="play">▶</span><span class="art-label">THE REVEAL</span></span><span class="recipe-name">Wait for it…</span><span class="recipe-meta">Funny · 12 sec · 3 clips</span></button><button class="recipe-card" data-go="recipe"><span class="recipe-art art-blue"><span class="play">▶</span><span class="art-label">THEN / NOW</span></span><span class="recipe-name">Two sides of me</span><span class="recipe-meta">Story · 18 sec · 4 clips</span></button><button class="recipe-card" data-go="recipe"><span class="recipe-art art-lime"><span class="play">▶</span><span class="art-label">SMALL WINS</span></span><span class="recipe-name">Little things, big joy</span><span class="recipe-meta">Lifestyle · 15 sec · 3 clips</span></button><button class="recipe-card" data-go="recipe"><span class="recipe-art art-lilac"><span class="play">▶</span><span class="art-label">BEFORE / AFTER</span></span><span class="recipe-name">The quick transformation</span><span class="recipe-meta">How-to · 20 sec · 4 clips</span></button></div>
+        </div>
+        <nav class="tab-bar" aria-label="Main navigation"><button class="tab" data-tab="discover" data-go="discover"><span>⌂</span>Discover</button><button class="tab" data-tab="create" data-go="import"><span class="create-tab">＋</span>Create</button><button class="tab active" data-tab="library"><span>▤</span>My recipes</button><button class="tab" data-tab="profile" data-go="profile"><span>○</span>Profile</button></nav>
+      </section>
+
+      <section class="screen" id="screen-recipe" data-screen="recipe">
+        <div class="screen-scroll flow-screen">
+          <div class="video-preview recipe-detail-art"><div class="recipe-detail-tag">A REMIX RECIPE</div><div class="detail-art-text">THE<br>REVEAL</div><button class="big-play" aria-label="Play example">▶</button><div class="preview-bottom"><span>00:04</span><span class="progress-track"><i></i></span><span>00:12</span></div></div>
+          <span class="category-label">FUNNY · FLEXIBLE ENDING</span><h1>Wait for it…</h1><p class="lede">A tiny setup, a perfectly timed reveal, and a payoff that’s all yours.</p>
+          <div class="recipe-stats"><div><span>RUNTIME</span><b>12 sec</b></div><div><span>NEEDS</span><b>3 clips</b></div><div><span>FORMAT</span><b>9:16</b></div></div>
+          <div class="included-box"><div class="included-head"><b>The rhythm</b><span>3 moments</span></div><div class="included-line"><span class="number-dot">1</span><span>Set up the moment</span><small>3 sec</small></div><div class="included-line"><span class="number-dot">2</span><span>Build a little suspense</span><small>4 sec</small></div><div class="included-line"><span class="number-dot">3</span><span>Land your reveal</span><small>5 sec</small></div></div>
+          <div class="privacy-card"><span class="privacy-icon">✦</span><div><b>Make it yours, not a copy</b><p>Replace the clips, rewrite the caption, and choose sound you can use.</p></div></div>
+        </div>
+        <div class="sticky-footer duo"><button class="icon-save" id="bookmark-recipe" aria-label="Save recipe">♡</button><button class="primary wide" data-go="adapt">Use this recipe <span>→</span></button></div>
+      </section>
+
+      <section class="screen" id="screen-profile" data-screen="profile">
+        <div class="screen-scroll">
+          <div class="eyebrow">YOUR SPACE</div><h1>Make it yours.</h1>
+          <div class="profile-card"><div class="profile-avatar">A</div><div><b>Creator profile</b><p>Optional · no account yet</p></div><button class="text-button" data-toast="Creator profile editing is planned for a later account phase.">Set up</button></div>
+          <div class="settings-group"><div class="settings-title">YOUR APP</div><button class="setting-row" data-toast="Choose your default video shape and export quality."><span class="setting-symbol">▣</span><span><b>Creation defaults</b><small>Format, captions, export quality</small></span><i>›</i></button><button class="setting-row" data-toast="Notification options appear when a feature needs them. Nothing is enabled by default."><span class="setting-symbol">♧</span><span><b>Notifications</b><small>Off until you choose</small></span><i>›</i></button><button class="setting-row" data-toast="Your drafts and recipes stay on this device in this prototype."><span class="setting-symbol">◇</span><span><b>Privacy & media</b><small>Local drafts · private by default</small></span><i>›</i></button><button class="setting-row" data-toast="Accessibility preferences follow your device settings."><span class="setting-symbol">◉</span><span><b>Accessibility</b><small>Text size, motion, captions</small></span><i>›</i></button></div>
+          <div class="settings-group"><div class="settings-title">ACCOUNT</div><button class="setting-row" id="open-account"><span class="setting-symbol">＋</span><span><b>Sign in or create account</b><small>Optional · for cloud backup</small></span><i>›</i></button><button class="setting-row" data-toast="There is no paid plan in this concept. We’ll validate value first."><span class="setting-symbol">○</span><span><b>Plan & billing</b><small>No subscription at launch</small></span><i>›</i></button></div>
+          <div class="help-links"><button data-toast="Help content will explain editing, exports, and rights." class="text-button">Help & feedback</button><button data-toast="Privacy terms will be published before launch." class="text-button">Privacy and terms</button></div>
+        </div>
+        <nav class="tab-bar" aria-label="Main navigation"><button class="tab" data-tab="discover" data-go="discover"><span>⌂</span>Discover</button><button class="tab" data-tab="create" data-go="import"><span class="create-tab">＋</span>Create</button><button class="tab" data-tab="library" data-go="library"><span>▤</span>My recipes</button><button class="tab active" data-tab="profile"><span>○</span>Profile</button></nav>
+      </section>
+
+      <div class="toast" role="status" aria-live="polite"></div>
+      <div class="modal-backdrop" id="profile-modal" hidden><div class="bottom-sheet"><div class="sheet-handle"></div><button class="sheet-close" aria-label="Close">×</button><span class="eyebrow">PREVIEW PROFILE</span><h2>Where are you sharing?</h2><p>Safe areas are a guide; apps and layouts can change.</p><button class="profile-option selected">Vertical social <span>9:16</span></button><button class="profile-option">TikTok preview <span>9:16</span></button><button class="profile-option">Reels preview <span>9:16</span></button><button class="profile-option">Shorts preview <span>9:16</span></button><button class="secondary wide" id="close-profile-modal">Done</button></div></div>
+      <div class="modal-backdrop" id="login-modal" hidden><div class="bottom-sheet"><div class="sheet-handle"></div><button class="sheet-close" aria-label="Close">×</button><span class="eyebrow">SAVE YOUR WORK</span><h2>Your recipes are yours.</h2><p>Create an account later to back them up and use them on another device.</p><button class="primary wide" data-toast="Sign-up is a future account feature.">Continue with email</button><button class="text-button wide" id="close-login-modal">Keep exploring without an account</button></div></div>
+    </div>
+    <aside class="prototype-aside"><span class="eyebrow">HOW TO EXPLORE</span><h2>A creative workflow,<br>one moment at a time.</h2><p>Tap through the core path: import, review sections, adapt a moment, preview, then save a reusable recipe.</p><div class="aside-steps"><span><i>01</i> Bring a reference</span><span><i>02</i> Shape the Remix Map</span><span><i>03</i> Make the scene yours</span><span><i>04</i> Preview and save</span></div><div class="aside-foot"><b>Prototype only</b><br>No uploads, accounts, AI analysis, media processing, or real saves happen in this concept.</div></aside>
+  </main>
+  <script src="prototype.js"></script>
+</body>
+</html>

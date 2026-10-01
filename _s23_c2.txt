@@ -1,0 +1,40 @@
+89 |     moov, msize = moov_range(buf)
+90 |     payload = inj._too_payload(value)
+91 |     atom = struct.pack(">I", 8 + len(payload)) + TOO + payload
+92 |     udta = child(buf, moov + 8, moov + msize, b"udta")
+93 |     if udta:
+94 |         pos, size = udta
+95 |         out = buf[:pos + size] + atom + buf[pos + size:]
+96 |         grow = [(pos, len(atom))]
+97 |     else:
+98 |         box = struct.pack(">I", 8 + len(atom)) + b"udta" + atom
+99 |         out = buf[:moov + msize] + box + buf[moov + msize:]
+100 | 
+101 | 
+102 | def strip_too(src, dst):
+103 |     """Remove every (c)too atom, repairing ancestor sizes and chunk offsets."""
+104 |     buf = bytes(open(src, "rb").read())
+105 |     boxes = scan(buf, 0, len(buf))
+...
+176 | upos, usize = child(buf, moov + 8, moov + msize, b"udta")
+177 | out4 = buf[:upos + usize] + atom + buf[upos + usize:]
+178 | delta = len(atom)
+179 | out4 = out4[:upos] + struct.pack(
+180 |     "I", struct.unpack(">I", out4[upos:upos + 4])[0] + delta) + out4[upos + 4:]
+181 | cm = struct.unpack(">I", out4[moov:moov + 4])[0]
+182 | out4 = out4[:moov] + struct.pack(">I", cm + delta) + out4[moov + 4:]
+183 | out4, _ = inj._shift_chunk_offsets(out4, delta, moov + cm + delta)
+184 | c4 = os.path.join(tmp, "c4.mp4")
+185 | open(c4, "wb").write(out4)
+186 | report("CASE 4", c4)
+187 | 
+188 |         grow = [(moov, 8 + len(atom))]
+189 |     total = sum(d for _p, d in grow)
+190 |     for pos, _d in grow:
+191 |         cur = struct.unpack(">I", out[pos:pos + 4])[0]
+192 |         out = out[:pos] + struct.pack(">I", cur + total) + out[pos + 4:]
+193 |     cm = struct.unpack(">I", out[moov:moov + 4])[0]
+194 |     out = out[:moov] + struct.pack(">I", cm + total) + out[moov + 4:]
+195 |     out, _ = inj._shift_chunk_offsets(out, total, moov + cm + total)
+196 |     open(dst, "wb").write(out)
+197 | 

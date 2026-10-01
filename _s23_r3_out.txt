@@ -1,0 +1,183 @@
+PyAV 18.1.0 · libavformat 62.12.102 · ffmpeg_version_info='8.1.2'
+Fixtures are the audit's own, built by _s23_probe_experiment.py with the
+test helper, which never sets an encoder tag — so 'A mp4' is the R3
+subject exactly as the audit left it.
+
+==============================================================================
+R3  WHERE DOES 'Lavf62.12.102' COME FROM?
+==============================================================================
+Q1 — is the string physically in the artifact? (no probe involved)
+  A mp4            2201 bytes  Lavf x1 @[2188]
+  B mkv            1910 bytes  Lavf x3 @[234, 250, 477]
+  C webm            922 bytes  Lavf x3 @[224, 240, 358]
+  D declared       2201 bytes  Lavf x1 @[2188], Lavc x1 @[1787]
+
+Q2 — raw context of each token hit (shows WHO wrote it into the file)
+  A mp4        Lavf       b'\xa9too\x00\x00\x00\x1ddata\x00\x00\x00\x01\x00\x00\x00\x00Lavf62.12.102'
+  B mkv        Lavf       b'I\xa9f\xcb\xbf\x84\xeaB~f*\xd7\xb1\x83\x0fB@M\x80\x8dLavf62.12.102WA\x8dLavf62.12.102s\xa4\x90\x1dJ'
+  C webm       Lavf       b'\x00\x00\x00\x00\x00\x15I\xa9f\xb2*\xd7\xb1\x83\x0fB@M\x80\x8dLavf62.12.102WA\x8dLavf62.12.102D\x89\x88@['
+  D declared   Lavf       b'\xa9too\x00\x00\x00\x1ddata\x00\x00\x00\x01\x00\x00\x00\x00Lavf62.12.102'
+  D declared   Lavc       b'\x00\x00\xa0\x00x\x00H\x00\x00\x00H\x00\x00\x00\x00\x00\x00\x00\x01\x0cLavc61.3.100\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x18\xff'
+
+Q3 — the declared fixture: was the declared value kept, and where?
+  bytes contain HandBrake  -> False
+  bytes contain Lavf       -> True
+  bytes contain Lavc       -> True
+  bytes contain MOVEMENT   -> False
+  container.metadata = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+  stream 0 metadata = {'language': 'und', 'handler_name': 'VideoHandler', 'encoder': 'Lavc61.3.100'}
+
+Q4 — SUPPRESSED: see Q1 (value is in the bytes) and Q5 (no option
+     removes it). A packet-copy remux was attempted first but PyAV 18's
+     add_stream() no longer accepts template=; not needed for the result.
+
+Q5 — can the writer be made not to declare itself, and does a DECLARED
+     container encoder survive into the bytes?
+  default
+      re-read metadata        = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+      bytes contain Lavf      = True   (at 2409)
+      bytes contain 'HandBrake' = False
+  movflags=+faststart
+      re-read metadata        = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+      bytes contain Lavf      = True   (at 917)
+      bytes contain 'HandBrake' = False
+  encoder='' (empty)
+      re-read metadata        = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+      bytes contain Lavf      = True   (at 2409)
+      bytes contain 'HandBrake' = False
+  encoder='HandBrake 1.6.0'
+      re-read metadata        = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'encoder': 'Lavf62.12.102'}
+      bytes contain Lavf      = True   (at 2409)
+      bytes contain 'HandBrake' = False
+  creation_time only
+      re-read metadata        = {'major_brand': 'isom', 'minor_version': '512', 'compatible_brands': 'isomiso2avc1mp41', 'creation_time': '2026-01-01T00:00:00.000000Z', 'encoder': 'Lavf62.12.102'}
+      bytes contain Lavf      = True   (at 2409)
+      bytes contain 'HandBrake' = False
+
+Q5b — the same question for Matroska (does WritingApp survive, and can it
+      be overridden or removed?)
+  mkv default
+      re-read container metadata = {'ENCODER': 'Lavf62.12.102'}
+      bytes: Lavf=True 'HandBrake'=False me=False
+      stream 0 metadata = {'DURATION': '00:00:00.042000000'}
+  mkv encoder='HandBrake 1.6.0'
+      re-read container metadata = {'ENCODER': 'Lavf62.12.102'}
+      bytes: Lavf=True 'HandBrake'=False me=False
+      stream 0 metadata = {'DURATION': '00:00:00.042000000'}
+  mkv muxing_application='me'
+      re-read container metadata = {'MUXING_APPLICATION': 'me', 'ENCODER': 'Lavf62.12.102'}
+      bytes: Lavf=True 'HandBrake'=False me=True
+      stream 0 metadata = {'DURATION': '00:00:00.042000000'}
+  mkv writing_application='me'
+      re-read container metadata = {'WRITING_APPLICATION': 'me', 'ENCODER': 'Lavf62.12.102'}
+      bytes: Lavf=True 'HandBrake'=False me=True
+      stream 0 metadata = {'DURATION': '00:00:00.042000000'}
+
+Q6 — Matroska/WebM: stored by the muxer, and EXPOSED to the probe?
+  B mkv bytes Lavf       b'\x0fB@M\x80\x8dLavf62.12.102WA\x8dLavf62.12.102s\xa4\x90\x1dJ\xf6\xa0\xe2Np4'
+  B mkv container.metadata (ALL) = {'ENCODER': 'Lavf62.12.102'}
+  B mkv stream 0 metadata (ALL) = {'DURATION': '00:00:00.109000000'}
+  C webm bytes Lavf       b'\x0fB@M\x80\x8dLavf62.12.102WA\x8dLavf62.12.102D\x89\x88@[@\x00\x00\x00\x00\x00'
+  C webm container.metadata (ALL) = {'ENCODER': 'Lavf62.12.102'}
+  C webm stream 0 metadata (ALL) = {'DURATION': '00:00:00.109000000'}
+==============================================================================
+R1  METADATA SCOPES THAT ACTUALLY EXIST
+==============================================================================
+Which scopes carry producer information, per fixture:
+  A mp4        6 distinct keys; producer-bearing ->
+      encoder          scopes=['container']
+      handler_name     scopes=['stream:0(video)']
+  B mkv        2 distinct keys; producer-bearing ->
+      ENCODER          scopes=['container']
+  C webm       2 distinct keys; producer-bearing ->
+      ENCODER          scopes=['container']
+  D declared   6 distinct keys; producer-bearing ->
+      encoder          scopes=['container', 'stream:0(video)']
+      handler_name     scopes=['stream:0(video)']
+
+Stream census (what each non-container scope exposes):
+  A mp4        video#0 ['handler_name', 'language']
+  B mkv        video#0 ['DURATION']
+  C webm       video#0 ['DURATION']
+  D declared   video#0 ['encoder', 'handler_name', 'language']
+==============================================================================
+R2  KEY NORMALISATION — WHAT AN EXACT MATCH DOES TODAY
+==============================================================================
+  A mp4        exact-match 'encoder' -> [('container', 'Lavf62.12.102')]
+  B mkv        exact-match 'encoder' -> ABSENT
+      case-only match: scope=container key='ENCODER' value='Lavf62.12.102'  <- INVISIBLE to the exact lookup
+  C webm       exact-match 'encoder' -> ABSENT
+      case-only match: scope=container key='ENCODER' value='Lavf62.12.102'  <- INVISIBLE to the exact lookup
+  D declared   exact-match 'encoder' -> [('container', 'Lavf62.12.102'), ('stream:0', 'Lavc61.3.100')]
+
+Codec long-name census (the LONGS map in ingestor.py vs what is emitted):
+  A mp4        video  name='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10' in_LONGS_map=True
+  B mkv        video  name='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10' in_LONGS_map=True
+  C webm       video  name='vp8' long='On2 VP8' in_LONGS_map=False
+  D declared   video  name='h264' long='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10' in_LONGS_map=True
+  distinct (name, long_name) pairs observed: 2
+==============================================================================
+R4  FAILURE-STATE CENSUS — WHAT THE CURRENT CODE CAN DISTINGUISH
+==============================================================================
+  NOTE: IngestionError.__init__ sets .recoverable but not .message, so the
+        message is reachable only via str(exc). Reported below via
+        str(); .message is absent — itself part of the R4 finding.
+
+  (1) what libavformat/PyAV says   (2) what Ingestor.ingest() returns
+  zero-byte file
+      libavformat -> InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'C:
+      ingest()    -> IngestionError('File is empty: C:\\Users\\DELL\\AppData\\Local\\Temp\\s23r3_akmqzy1x\\r4_empty.mp4', recoverable=False)
+  24 bytes (header only)
+      libavformat -> InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'C:
+      ingest()    -> IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_header_only.mp4'", recoverable=False)
+  truncated mid-stream
+      libavformat -> InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'C:
+      ingest()    -> IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_half.mp4'", recoverable=False)
+  128 ASCII bytes
+      libavformat -> InvalidDataError: [Errno 1094995529] Invalid data found when processing input: 'C:
+      ingest()    -> IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_ascii.mp4'", recoverable=False)
+  valid mkv, .mkv ext
+      libavformat -> av.open OK format='matroska,webm' video=1
+      ingest()    -> OK format=matroska,webm size=3094 codec=h264 container_fields=['format', 'format_long', 'provenance', 'size_bytes', 'source']
+  valid container, no video stream
+      libavformat -> av.open OK format='matroska,webm' video=0
+      ingest()    -> IngestionError('No video stream found', recoverable=False)
+  path that does not exist
+      libavformat -> FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\DELL\\AppData\\
+      ingest()    -> IngestionError('File not found: C:\\Users\\DELL\\AppData\\Local\\Temp\\s23r3_akmqzy1x\\r4_missing.mp4', recoverable=False)
+  valid file
+      libavformat -> av.open OK format='mov,mp4,m4a,3gp,3g2,mj2' video=1
+      ingest()    -> OK format=mp4 size=3250 codec=h264 container_fields=['format', 'format_long', 'provenance', 'size_bytes', 'source']
+  valid, no extra tags
+      libavformat -> av.open OK format='mov,mp4,m4a,3gp,3g2,mj2' video=1
+      ingest()    -> OK format=mp4 size=3250 codec=h264 container_fields=['format', 'format_long', 'provenance', 'size_bytes', 'source']
+  valid, ~25s long
+      libavformat -> av.open OK format='mov,mp4,m4a,3gp,3g2,mj2' video=1
+      ingest()    -> OK format=mp4 size=43298 codec=h264 container_fields=['format', 'format_long', 'provenance', 'size_bytes', 'source']
+
+Distinct terminal outcomes Ingestor.ingest() produces over the census:
+  IngestionError('File is empty: C:\\Users\\DELL\\AppData\\Local\\Temp\\s23r3_akmqzy1x\\r4_empty.mp4', recoverable=False)
+      <- ['zero-byte file']
+  IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_header_only.mp4'", recoverable=False)
+      <- ['24 bytes (header only)']
+  IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_half.mp4'", recoverable=False)
+      <- ['truncated mid-stream']
+  IngestionError("Unreadable container format: [Errno 1094995529] Invalid data found when processing input: 'C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Temp\\\\s23r3_akmqzy1x\\\\r4_ascii.mp4'", recoverable=False)
+      <- ['128 ASCII bytes']
+  success (probe complete)
+      <- ['valid mkv, .mkv ext', 'valid file', 'valid, no extra tags', 'valid, ~25s long']
+  IngestionError('No video stream found', recoverable=False)
+      <- ['valid container, no video stream']
+  IngestionError('File not found: C:\\Users\\DELL\\AppData\\Local\\Temp\\s23r3_akmqzy1x\\r4_missing.mp4', recoverable=False)
+      <- ['path that does not exist']
+
+Probe identity, as the code currently reports it:
+  has SourceDescription.source? False
+  container.source = SourceInfo(layer=<SourceLayer.SOURCE_NATIVE: 'source_native'>, model=None, tool='PyAV')
+  video_stream.source = SourceInfo(layer=<SourceLayer.SOURCE_NATIVE: 'source_native'>, model=None, tool='PyAV')
+  SourceInfo fields = ['layer', 'model', 'tool']
+  ProvenanceEntry[0] = ProvenanceEntry(layer=<SourceLayer.SOURCE_NATIVE: 'source_native'>, evidence_refs=['container_probe'], transform_type='none', confidence_delta=0.0)
+  ProvenanceEntry fields = ['confidence_delta', 'evidence_refs', 'layer', 'transform_type']
+  av.ffmpeg_version_info = '8.1.2'
+  av.library_versions['libavformat'] = '62.12.102'
+  -> no version of anything is recorded anywhere in the contract.
