@@ -1,7 +1,7 @@
 # Copyright, Rights, and Asset Provenance
 
-**Prepared:** 3 October 2026  
-**Status:** Product safeguards and legal-review checklist. This is not legal advice or a conclusion that any specific import, analysis, transformation, or export is lawful. Launch markets and counsel review are still open.  
+**Prepared:** 3 October 2026
+**Status:** Product safeguards and legal-review checklist. This is not legal advice or a conclusion that any specific import, analysis, transformation, or export is lawful. Launch markets and counsel review are still open.
 **Related:** [MVP coverage and traceability](mvp_coverage_and_traceability.md), [video workflow](video_template_workflow_spec.md), [privacy and data lifecycle](media_privacy_security_and_data_lifecycle.md), [account/security research](../research/account_security_monetization_and_editor_scope.md).
 
 ## 1. Product rule: editing does not clear rights
