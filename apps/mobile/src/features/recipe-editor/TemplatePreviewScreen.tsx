@@ -1,73 +1,110 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Body, Eyebrow, Page, PrimaryButton, StepLabel, Title, VideoPlaceholder } from '../../shared/Components';
-import { SectionDecision } from '../../shared/sampleData';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Body, Eyebrow, Page, PrimaryButton, StepLabel, Title } from '../../shared/Components';
 import { palette } from '../../shared/theme';
+import { TemplateRecipe } from '../template-library/types';
 
 type Props = {
-  profile: string;
-  previewMode: 'template' | 'reference';
-  includedSections: Array<{ id: string; label: string }>;
-  decisions: Record<string, SectionDecision>;
+  title: string;
+  sections: TemplateRecipe['sections'];
+  sourceDurationSeconds: number;
   runtime: number;
-  onProfileChange: (profile: string) => void;
-  onPreviewModeChange: (mode: 'template' | 'reference') => void;
+  isSaved: boolean;
+  saving: boolean;
+  error: string | null;
+  onTitleChange: (title: string) => void;
   onSave: () => void;
 };
-export function TemplatePreviewScreen({ profile, previewMode, includedSections, decisions, runtime, onProfileChange, onPreviewModeChange, onSave }: Props) {
-  const selectProfile = () => Alert.alert('Output preview', 'Choose a framing guide', [
-    ...['Vertical social · 9:16', 'TikTok guide · 9:16', 'Reels guide · 9:16', 'Shorts guide · 9:16'].map((value) => ({ text: value, onPress: () => onProfileChange(value) })),
-    { text: 'Cancel', style: 'cancel' },
-  ]);
-  return <Page footer={<View style={styles.footer}><PrimaryButton title="Save my template" onPress={onSave} /><Text style={styles.footnote}>Keep it private · edit it whenever you want</Text></View>}>
-    <StepLabel number="04">TEMPLATE PREVIEW</StepLabel><Title>Here’s your recipe.</Title><Body>A reusable structure, ready for a fresh take.</Body>
-    <VideoPlaceholder label={previewMode === 'template' ? 'YOUR TEMPLATE' : 'REFERENCE · SAMPLE ONLY'} caption={previewMode === 'template' ? 'Your moment goes here' : 'Wait… what?'} height={250} />
-    <View style={styles.modes}><ModeButton active={previewMode === 'template'} label="Template structure" onPress={() => onPreviewModeChange('template')} /><ModeButton active={previewMode === 'reference'} label="Reference" onPress={() => onPreviewModeChange('reference')} /></View>
-    <View style={styles.stats}><Stat label="RUNTIME" value={`${runtime} sec`} /><Stat label="REPLACEABLE MOMENTS" value={`${includedSections.length} sections`} /><Stat label="FORMAT" value="Vertical 9:16" /></View>
-    <View style={styles.included}><View style={styles.includedHead}><Text style={styles.includedTitle}>In this template</Text><Text style={styles.includedCount}>{includedSections.length} moments</Text></View>{includedSections.map((section) => <View key={section.id} style={styles.row}><Text style={styles.check}>✓</Text><Text style={styles.rowLabel}>{section.label}</Text><Text style={styles.rowMeta}>{decisions[section.id] === 'keep' ? 'Kept as-is' : 'Replaceable'}</Text></View>)}</View>
-    <Pressable onPress={selectProfile} style={styles.profile}><View><Eyebrow>PREVIEW FOR</Eyebrow><Text style={styles.profileText}>{profile}</Text></View><Text style={styles.chevron}>⌄</Text></Pressable>
-    <View style={styles.safeArea}><View style={styles.safePhone}><Text style={styles.safeTop}>Creator · audio</Text><View style={styles.safeFrame}><Text style={styles.safeCopy}>Keep text{ '\n' }inside this area</Text></View><Text style={styles.safeBottom}>♡　◉　➤　Caption…</Text></View><Text style={styles.safeNote}>Interface overlays are guidance.{ '\n' }Check in the destination app.</Text></View>
-    <View style={styles.rights}><Text style={styles.rightsIcon}>◇</Text><Text style={styles.rightsText}>Private recipe. Only your new video will be exported.</Text></View>
+
+export function TemplatePreviewScreen({ title, sections, sourceDurationSeconds, runtime, isSaved, saving, error, onTitleChange, onSave }: Props) {
+  const included = sections.filter((section) => section.decision !== 'exclude');
+  const keptCount = included.filter((section) => section.decision === 'keep').length;
+  const canSave = title.trim().length > 0 && included.length > 0 && !saving;
+
+  return <Page footer={<View style={styles.footer}>
+    <PrimaryButton title={saving ? 'Saving...' : isSaved ? 'Save changes' : 'Save to My Templates'} disabled={!canSave} onPress={onSave} />
+    <Text style={styles.footnote}>Saved recipes contain structure and choices, not the original video.</Text>
+  </View>}>
+    <StepLabel number="04">TEMPLATE DETAILS</StepLabel>
+    <Title>Save a reusable structure.</Title>
+    <Body>Check the moments and give this private template a name.</Body>
+
+    <View style={styles.titleBox}>
+      <Eyebrow>TEMPLATE NAME</Eyebrow>
+      <TextInput value={title} onChangeText={onTitleChange} maxLength={120} placeholder="My video template" accessibilityLabel="Template name" style={styles.titleInput} />
+    </View>
+
+    <View style={styles.stats}>
+      <Stat label="SOURCE LENGTH" value={`${sourceDurationSeconds.toFixed(1)} sec`} />
+      <Stat label="INCLUDED" value={`${included.length} moments`} />
+      <Stat label="TEMPLATE LENGTH" value={`${runtime.toFixed(1)} sec`} />
+    </View>
+
+    <View style={styles.timelineCard}>
+      <View style={styles.timelineHead}><Eyebrow>STRUCTURE PREVIEW</Eyebrow><Text style={styles.format}>Vertical 9:16</Text></View>
+      <View style={styles.timeline} accessibilityLabel="Template section structure">
+        {sections.map((section, index) => <View key={section.id} style={[styles.segment, { flex: Math.max(section.endSeconds - section.startSeconds, 0.1), backgroundColor: section.decision === 'exclude' ? '#D8D7DE' : sectionColors[index % sectionColors.length] }]} />)}
+      </View>
+      <Text style={styles.previewNote}>This is a timing and decision preview, not a rendered video.</Text>
+    </View>
+
+    <View style={styles.sectionCard}>
+      <Text style={styles.sectionHeading}>Sections</Text>
+      {sections.map((section, index) => <View key={section.id} style={[styles.sectionRow, section.decision === 'exclude' && styles.excludedRow]}>
+        <View style={[styles.sectionMark, { backgroundColor: section.decision === 'exclude' ? '#D8D7DE' : sectionColors[index % sectionColors.length] }]} />
+        <View style={styles.sectionCopy}>
+          <Text style={styles.sectionName}>Moment {index + 1}</Text>
+          <Text style={styles.sectionTime}>{formatTime(section.startSeconds)} - {formatTime(section.endSeconds)}</Text>
+        </View>
+        <Text style={[styles.decision, section.decision === 'exclude' && styles.excludedText]}>{section.decision === 'edit' ? 'Replaceable' : section.decision === 'keep' ? 'Kept' : 'Excluded'}</Text>
+      </View>)}
+    </View>
+
+    {keptCount > 0 && <View style={styles.notice}>
+      <Text style={styles.noticeTitle}>Original media is not saved</Text>
+      <Text style={styles.noticeText}>{keptCount} kept {keptCount === 1 ? 'moment points' : 'moments point'} to the imported video. Before saving, choose whether to turn these into replaceable slots. This keeps the recipe independent of the source file.</Text>
+    </View>}
+    {error && <View style={styles.error}><Text style={styles.errorText}>{error}</Text></View>}
   </Page>;
 }
 
-function ModeButton({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={[styles.mode, active && styles.modeActive]}><Text style={[styles.modeText, active && styles.modeTextActive]}>{label}</Text></Pressable>;
-}
 function Stat({ label, value }: { label: string; value: string }) {
   return <View style={styles.stat}><Text style={styles.statLabel}>{label}</Text><Text style={styles.statValue}>{value}</Text></View>;
 }
 
+function formatTime(seconds: number): string {
+  return `0:${seconds.toFixed(1).padStart(4, '0')}`;
+}
+
+const sectionColors = ['#DFA798', '#87ADB9', '#D39C69', '#AAA8B3'];
+
 const styles = StyleSheet.create({
-  modes: { flexDirection: 'row', backgroundColor: '#ECEBF0', borderRadius: 9, padding: 3, marginTop: 1 },
-  mode: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 7 },
-  modeActive: { backgroundColor: '#FFF' },
-  modeText: { color: '#85838F', fontSize: 9, fontWeight: '600' },
-  modeTextActive: { color: '#494196' },
-  stats: { flexDirection: 'row', paddingVertical: 13, borderBottomWidth: 1, borderColor: palette.line },
+  titleBox: { backgroundColor: '#FFF', borderWidth: 1, borderColor: palette.line, borderRadius: 12, padding: 12, marginTop: 18 },
+  titleInput: { color: palette.ink, fontSize: 14, fontWeight: '700', paddingVertical: 8 },
+  stats: { flexDirection: 'row', paddingVertical: 14, borderBottomWidth: 1, borderColor: palette.line },
   stat: { flex: 1, gap: 5 },
   statLabel: { fontSize: 7, fontWeight: '700', color: '#9694A0', letterSpacing: .6 },
   statValue: { color: palette.ink, fontSize: 9, fontWeight: '700' },
-  included: { marginVertical: 13, borderWidth: 1, borderColor: palette.line, borderRadius: 12, backgroundColor: '#FFF', overflow: 'hidden' },
-  includedHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 10 },
-  includedTitle: { color: palette.ink, fontSize: 10, fontWeight: '700' },
-  includedCount: { color: '#898793', fontSize: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 8, borderTopWidth: 1, borderColor: '#F1F0F4' },
-  check: { color: palette.green, fontSize: 10, fontWeight: '800' },
-  rowLabel: { color: '#4C4A56', fontSize: 9 },
-  rowMeta: { color: '#898793', fontSize: 8, marginLeft: 'auto' },
-  profile: { borderWidth: 1, borderColor: palette.line, borderRadius: 10, backgroundColor: '#FFF', padding: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  profileText: { color: palette.ink, fontSize: 10, fontWeight: '700', marginTop: 4 },
-  chevron: { color: '#777582', fontSize: 18 },
-  safeArea: { marginTop: 10, backgroundColor: '#F0EFF5', borderRadius: 11, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 11 },
-  safePhone: { width: 68, height: 103, borderRadius: 8, backgroundColor: '#B29BAA', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  safeTop: { position: 'absolute', top: 0, width: '100%', paddingVertical: 4, textAlign: 'center', color: '#FFF', backgroundColor: '#28243B55', fontSize: 5 },
-  safeFrame: { borderWidth: 1, borderColor: '#FFFFFFB0', borderStyle: 'dashed', width: 48, height: 60, alignItems: 'center', justifyContent: 'center' },
-  safeCopy: { color: '#FFF', fontSize: 6, textAlign: 'center', fontWeight: '700' },
-  safeBottom: { position: 'absolute', bottom: 0, width: '100%', paddingVertical: 4, textAlign: 'center', color: '#FFF', backgroundColor: '#28243B55', fontSize: 5 },
-  safeNote: { color: '#797783', fontSize: 8, lineHeight: 13 },
-  rights: { flexDirection: 'row', gap: 7, marginTop: 13, alignItems: 'center' },
-  rightsIcon: { color: palette.accent, fontSize: 12 },
-  rightsText: { color: '#85838F', fontSize: 8 },
+  timelineCard: { backgroundColor: '#FFF', borderWidth: 1, borderColor: palette.line, borderRadius: 12, padding: 12, marginTop: 13 },
+  timelineHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  format: { color: '#777582', fontSize: 8 },
+  timeline: { height: 12, flexDirection: 'row', gap: 3, marginVertical: 12 },
+  segment: { borderRadius: 4 },
+  previewNote: { color: '#777582', fontSize: 8, lineHeight: 12 },
+  sectionCard: { backgroundColor: '#FFF', borderWidth: 1, borderColor: palette.line, borderRadius: 12, marginTop: 12, overflow: 'hidden' },
+  sectionHeading: { color: palette.ink, fontSize: 10, fontWeight: '700', padding: 12 },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 9, padding: 10, borderTopWidth: 1, borderColor: '#F1F0F4' },
+  excludedRow: { opacity: .65 },
+  sectionMark: { width: 8, height: 33, borderRadius: 4 },
+  sectionCopy: { flex: 1 },
+  sectionName: { color: palette.ink, fontSize: 9, fontWeight: '700' },
+  sectionTime: { color: '#898793', fontSize: 8, marginTop: 4 },
+  decision: { color: '#5B54A4', fontSize: 8, fontWeight: '700' },
+  excludedText: { color: '#777582' },
+  notice: { backgroundColor: '#F0EFF8', padding: 11, borderRadius: 10, marginTop: 11 },
+  noticeTitle: { color: palette.ink, fontSize: 9, fontWeight: '700' },
+  noticeText: { color: '#777582', fontSize: 8, lineHeight: 12, marginTop: 4 },
+  error: { padding: 10, marginTop: 10, borderRadius: 9, backgroundColor: palette.coralSoft },
+  errorText: { color: '#8A514A', fontSize: 9, lineHeight: 14 },
   footer: { padding: 12, paddingHorizontal: 20, backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: palette.line },
-  footnote: { textAlign: 'center', color: '#888692', fontSize: 9, marginTop: 7 },
+  footnote: { color: '#888692', fontSize: 8, textAlign: 'center', marginTop: 7 },
 });

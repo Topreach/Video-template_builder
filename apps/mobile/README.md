@@ -25,8 +25,8 @@ Feature screens own their behavior and UI. Keep shared components generic; use n
 
 ## Current capability and limits
 
-- Connected: native video-library picker, selected-video preview, 30-second duration gate, manual time-based section splitting, explicit Edit/Keep/Exclude choices, replacement suggestion UI, profile/settings concept.
-- Sample only: automatic section boundaries/roles, replacement suggestions, saving, library, output profile previews.
-- Not connected: automatic scene detection, analysis API, source persistence, recipe persistence, audio editing, visual transformations, export/rendering, authentication, push notifications, and billing.
+- Connected: native video-library picker, selected-video preview, 30-second duration gate, manual time-based section splitting, explicit Edit/Keep/Exclude choices, local recipe save/list/reopen/rename/duplicate/delete through a versioned SQLite repository.
+- Sample only: automatic section boundaries/roles, replacement suggestions, source-video rendering, fill-with-new-footage, and MP4 output.
+- Not connected: automatic scene detection, analysis API, source-media persistence, audio editing, visual transformations, export/rendering, authentication, push notifications, and billing.
 
-Do not represent sample data as an analysis result. Keep generated and user-approved decisions distinct when the real analysis contract is introduced.
+Saved recipes store timing and user decisions, not the source video or picker URI. Do not represent manual sections as analysis results. Keep generated and user-approved decisions distinct when the real analysis contract is introduced.

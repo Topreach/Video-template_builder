@@ -42,7 +42,7 @@ The isolated Expo candidate is in [`apps/mobile`](../../apps/mobile/README.md). 
 - `import`: iOS/Android library picker, local playback, and a source-duration gate at 30 seconds.
 - `section-review`: Manual time-based splitting and explicit Edit/Keep/Exclude choices over the selected clip; automatic analysis is not connected.
 - `recipe-editor`: suggestion and template-preview UI using sample data.
-- `template-library`: in-memory demo state only; durable local storage is not connected.
+- `template-library`: local recipe metadata persists through `RecipeRepository` backed by Expo SQLite; the source video is not copied into recipe rows.
 - `export`, backend analysis, accounts, notification delivery, and billing are not connected.
 
 The Expo project is a reversible UI candidate, not a final framework or rendering decision. The Python analysis package and its closed technical contracts were not modified by the mobile spike.
