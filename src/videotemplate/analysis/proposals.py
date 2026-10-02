@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class MediaFacts(BaseModel):
@@ -52,3 +52,33 @@ class AnalysisProposal(BaseModel):
     sections: list[ProposedSection] = Field(default_factory=list)
     warnings: list[AnalysisWarning] = Field(default_factory=list)
 
+    @model_validator(mode="after")
+    def validate_timeline(self) -> "AnalysisProposal":
+        """Reject proposals that could make the review UI lose or duplicate source time."""
+        duration = self.media_facts.duration_ms
+        boundary_times = [boundary.at_ms for boundary in self.boundaries]
+        if boundary_times != sorted(set(boundary_times)):
+            raise ValueError("proposal boundaries must be unique and ordered")
+        if any(at >= duration for at in boundary_times):
+            raise ValueError("proposal boundaries must fall inside the source duration")
+
+        section_ids: set[str] = set()
+        previous_end = 0
+        for index, section in enumerate(self.sections):
+            if section.id in section_ids:
+                raise ValueError("proposal section ids must be unique")
+            section_ids.add(section.id)
+            if section.order != index:
+                raise ValueError("proposal section order must be contiguous from zero")
+            if section.start_ms != previous_end:
+                raise ValueError("proposal sections must cover the timeline without gaps or overlaps")
+            if section.end_ms > duration:
+                raise ValueError("proposal sections must end within the source duration")
+            previous_end = section.end_ms
+
+        if not self.sections or previous_end != duration:
+            raise ValueError("proposal sections must cover the full source duration")
+        section_starts = {section.start_ms for section in self.sections[1:]}
+        if set(boundary_times) != section_starts:
+            raise ValueError("proposal boundaries must match interior section starts")
+        return self
