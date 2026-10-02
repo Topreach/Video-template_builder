@@ -11,10 +11,10 @@ type Props = {
   onVideoSelected: (video: ImportedVideo) => void;
   onDurationReady: (duration: number) => void;
   onChooseVideoError: (message: string) => void;
-  onAnalyze: () => void;
+  onContinue: () => void;
 };
 
-export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, onChooseVideoError, onAnalyze }: Props) {
+export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, onChooseVideoError, onContinue }: Props) {
   const [selecting, setSelecting] = useState(false);
   const duration = selectedVideo?.durationSeconds;
   const exceedsLimit = duration !== null && duration !== undefined && duration > 30;
@@ -59,15 +59,15 @@ export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, 
     }
   }
 
-  return <Page footer={<View style={styles.footer}><PrimaryButton title={exceedsLimit ? 'Choose a video under 30 seconds' : ready ? 'Continue to section review' : 'Choose a video to continue'} disabled={!ready} onPress={onAnalyze} /><Text style={styles.footnote}>Your original file is not modified.</Text></View>}>
-    <StepLabel number="01">START WITH A REFERENCE</StepLabel><Title>Bring the video.{ '\n' }Keep the good parts.</Title><Body>We’ll map its moments so you can choose what stays, changes, or goes.</Body>
+  return <Page footer={<View style={styles.footer}><PrimaryButton title={exceedsLimit ? 'Choose a video under 30 seconds' : ready ? 'Set up video moments' : 'Choose a video to continue'} disabled={!ready} onPress={onContinue} /><Text style={styles.footnote}>Your original file is not modified.</Text></View>}>
+    <StepLabel number="01">START WITH A REFERENCE</StepLabel><Title>Bring the video.{'\n'}Keep the good parts.</Title><Body>Set up moments to reuse. Automatic scene suggestions are planned for a later step.</Body>
     {!selectedVideo ? <View style={styles.upload}><View style={styles.uploadIcon}><Text style={styles.uploadArrow}>↑</Text></View><Text style={styles.uploadTitle}>Choose a video</Text><Text style={styles.uploadMeta}>From your device · up to 30 seconds</Text><SecondaryButton title={selecting ? 'Opening library…' : 'Choose from library'} onPress={chooseVideo} /></View> : <>
       <SelectedVideoPreview uri={selectedVideo.uri} onDuration={onDurationReady} />
       <View style={styles.fileRow}><View style={{ flex: 1 }}><Text style={styles.fileName} numberOfLines={1}>{selectedVideo.fileName}</Text><Text style={styles.fileMeta}>{duration && duration > 0 ? `${duration.toFixed(1)} sec` : 'Checking duration…'} · {selectedVideo.width} × {selectedVideo.height}</Text></View><Pressable onPress={chooseVideo} accessibilityRole="button"><Text style={styles.change}>Change</Text></Pressable></View>
       {exceedsLimit ? <View style={styles.error}><Text style={styles.errorTitle}>This video is over the 30-second limit.</Text><Text style={styles.errorBody}>Choose a shorter source. We won’t trim it silently.</Text></View> : <Text style={styles.hint}>The 30-second check uses the source duration. We won’t shorten the video for you.</Text>}
     </>}
-    <View style={styles.explainer}><View style={styles.or}><View style={styles.rule} /><Text style={styles.orText}>WHAT HAPPENS NEXT</Text><View style={styles.rule} /></View><InfoCard title="You choose every moment" icon="◇">Review suggested sections, then mark each Edit, Keep, or Exclude before a recipe is saved.</InfoCard></View>
-    <View style={styles.previewNote}><Eyebrow>BUILD STATUS</Eyebrow><Text style={styles.previewNoteText}>Video picking, local preview, and the 30-second gate are connected. Section detection is the next integration step.</Text></View>
+    <View style={styles.explainer}><View style={styles.or}><View style={styles.rule} /><Text style={styles.orText}>WHAT HAPPENS NEXT</Text><View style={styles.rule} /></View><InfoCard title="You choose every moment" icon="i">Divide the clip into moments, then mark each Edit, Keep, or Exclude before saving.</InfoCard></View>
+    <View style={styles.previewNote}><Eyebrow>BUILD STATUS</Eyebrow><Text style={styles.previewNoteText}>Video picking, local preview, and the 30-second gate are connected. Manual moment setup works now; automatic scene detection is still to come.</Text></View>
   </Page>;
 }
 

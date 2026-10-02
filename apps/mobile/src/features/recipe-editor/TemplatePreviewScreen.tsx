@@ -1,13 +1,12 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Eyebrow, Page, PrimaryButton, StepLabel, Title, VideoPlaceholder } from '../../shared/Components';
-import { SampleSection } from '../../shared/sampleData';
 import { SectionDecision } from '../../shared/sampleData';
 import { palette } from '../../shared/theme';
 
 type Props = {
   profile: string;
   previewMode: 'template' | 'reference';
-  includedSections: SampleSection[];
+  includedSections: Array<{ id: string; label: string }>;
   decisions: Record<string, SectionDecision>;
   runtime: number;
   onProfileChange: (profile: string) => void;

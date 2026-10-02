@@ -40,7 +40,7 @@ The isolated Expo candidate is in [`apps/mobile`](../../apps/mobile/README.md). 
 
 - `discover`: screen and sample recipe cards.
 - `import`: iOS/Android library picker, local playback, and a source-duration gate at 30 seconds.
-- `section-review`: Edit/Keep/Exclude interaction over clearly labeled sample data; automatic analysis is not connected.
+- `section-review`: Manual time-based splitting and explicit Edit/Keep/Exclude choices over the selected clip; automatic analysis is not connected.
 - `recipe-editor`: suggestion and template-preview UI using sample data.
 - `template-library`: in-memory demo state only; durable local storage is not connected.
 - `export`, backend analysis, accounts, notification delivery, and billing are not connected.
