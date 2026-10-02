@@ -3,6 +3,7 @@ CLI entry point for the Template DNA Builder.
 
 Usage:
     python -m videotemplate.cli ingest <video_path>
+    python -m videotemplate.cli analyze <video_path>  # experimental local shot-boundary proposals
     python -m videotemplate.cli run <video_path>    # full pipeline
     python -m videotemplate.cli status <job_id>
     python -m videotemplate.cli recover <job_id>
@@ -25,6 +26,21 @@ def cmd_ingest(path: str):
     try:
         source = ingestor.ingest(path)
         print(json.dumps(source.model_dump(mode="json"), indent=2, default=str))
+    except Exception as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+
+def cmd_analyze(path: str):
+    """Produce experimental, local, user-reviewable shot-boundary proposals."""
+    from .analysis import AdaptiveShotBoundaryAnalyzer
+
+    try:
+        print("[checking video] Validating local source and 30-second limit...", file=sys.stderr)
+        source = Ingestor(max_duration=30.0).ingest(path)
+        print("[finding visual cuts] Running experimental adaptive detector...", file=sys.stderr)
+        proposal = AdaptiveShotBoundaryAnalyzer().analyze(source)
+        print(json.dumps(proposal.model_dump(mode="json"), indent=2))
     except Exception as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -119,6 +135,9 @@ def main():
     p_ingest = subparsers.add_parser("ingest", help="Run ingestion only")
     p_ingest.add_argument("path", help="Path to video file")
 
+    p_analyze = subparsers.add_parser("analyze", help="Propose experimental visual shot boundaries")
+    p_analyze.add_argument("path", help="Path to local video file (maximum 30 seconds)")
+
     p_run = subparsers.add_parser("run", help="Run full Block 1 pipeline")
     p_run.add_argument("path", help="Path to video file")
 
@@ -131,6 +150,7 @@ def main():
     args = parser.parse_args()
     commands = {
         "ingest": lambda: cmd_ingest(args.path),
+        "analyze": lambda: cmd_analyze(args.path),
         "run": lambda: cmd_run(args.path),
         "status": lambda: cmd_status(args.job_id),
         "recover": lambda: cmd_recover(args.job_id),

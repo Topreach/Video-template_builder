@@ -29,6 +29,8 @@ npm start
 
 Requires Python 3.11 or newer. Install the project and development dependencies with `pip install -e ".[dev]"`. See `pyproject.toml` for dependencies and package details.
 
+The experimental local shot-boundary proposal command is `python -m videotemplate.cli analyze <video-path>`. It emits candidate time ranges only; it does not physically split the video and is not connected to the mobile app.
+
 ## Status
 
 The mobile app is an early MVP, not a production video editor. It supports manual section review, on-device recovery of one unfinished project, and local storage of reusable template recipes. Automatic video analysis, media replacement and rendering, audio editing, export, accounts, notifications, and billing remain future work.

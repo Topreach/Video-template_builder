@@ -8,6 +8,10 @@
 
 Specify what the analyzer may observe, how each observation can help a user, what it cannot establish, and what consent/device evidence is required. "Analyze the video" is not one model call. It is a collection of optional signals with different accuracy, platform, privacy, and processing constraints.
 
+### Current implementation checkpoint
+
+The Python package now has an experimental local PySceneDetect Adaptive baseline and versioned shot-span proposal output. It is available through the developer CLI only, is not connected to the mobile app, has no calibrated confidence, and does not physically split source media. See [ADR 0003](../architecture/decisions/0003-experimental-local-shot-analysis.md). The processing-location decision and annotated-corpus evaluation remain open.
+
 ### Core rule
 
 Signals describe evidence in the selected media. They do not by themselves establish story meaning, ownership, consent, identity, safety, or permission to publish. An analyzer may propose; the user reviews and decides.
