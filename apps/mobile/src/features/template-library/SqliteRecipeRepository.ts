@@ -1,8 +1,6 @@
-import * as SQLite from 'expo-sqlite';
+import { getAppDatabase } from '../../shared/storage/SqliteDatabase';
 import { RecipeRepository, TemplateRecipe, TemplateSummary } from './types';
 
-const DATABASE_NAME = 'video-templates.db';
-const DATABASE_SCHEMA_VERSION = 1;
 const RECIPE_SCHEMA_VERSION = 1;
 
 type RecipeRow = {
@@ -15,51 +13,9 @@ type RecipeRow = {
   payload_json: string;
 };
 
-let databasePromise: Promise<SQLite.SQLiteDatabase> | null = null;
-
-async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  if (!databasePromise) {
-    databasePromise = initializeDatabase();
-  }
-  try {
-    return await databasePromise;
-  } catch (error) {
-    databasePromise = null;
-    throw error;
-  }
-}
-
-async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
-  const database = await SQLite.openDatabaseAsync(DATABASE_NAME);
-  await database.execAsync('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
-  const versionRow = await database.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-  const currentVersion = versionRow?.user_version ?? 0;
-
-  if (currentVersion > DATABASE_SCHEMA_VERSION) {
-    throw new Error('This app version cannot open the saved template library. Update the app and try again.');
-  }
-
-  if (currentVersion < 1) {
-    await database.execAsync(`
-      CREATE TABLE IF NOT EXISTS recipes (
-        id TEXT PRIMARY KEY NOT NULL,
-        schema_version INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        section_count INTEGER NOT NULL,
-        runtime_seconds REAL NOT NULL,
-        updated_at TEXT NOT NULL,
-        payload_json TEXT NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS recipes_updated_at ON recipes(updated_at DESC);
-      PRAGMA user_version = 1;
-    `);
-  }
-  return database;
-}
-
 export class SqliteRecipeRepository implements RecipeRepository {
   async list(): Promise<TemplateSummary[]> {
-    const database = await getDatabase();
+    const database = await getAppDatabase();
     const rows = await database.getAllAsync<RecipeRow>(
       'SELECT id, schema_version, title, section_count, runtime_seconds, updated_at, payload_json FROM recipes ORDER BY updated_at DESC',
     );
@@ -74,7 +30,7 @@ export class SqliteRecipeRepository implements RecipeRepository {
   }
 
   async get(id: string): Promise<TemplateRecipe | null> {
-    const database = await getDatabase();
+    const database = await getAppDatabase();
     const row = await database.getFirstAsync<Pick<RecipeRow, 'schema_version' | 'payload_json'>>(
       'SELECT schema_version, payload_json FROM recipes WHERE id = ?',
       id,
@@ -95,7 +51,7 @@ export class SqliteRecipeRepository implements RecipeRepository {
 
   async save(recipe: TemplateRecipe): Promise<void> {
     if (!isTemplateRecipe(recipe)) throw new Error('The template is incomplete and was not saved.');
-    const database = await getDatabase();
+    const database = await getAppDatabase();
     const included = recipe.sections.filter((section) => section.decision !== 'exclude');
     const runtimeSeconds = included.reduce((sum, section) => sum + (section.endSeconds - section.startSeconds), 0);
     await database.runAsync(
@@ -119,7 +75,7 @@ export class SqliteRecipeRepository implements RecipeRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const database = await getDatabase();
+    const database = await getAppDatabase();
     await database.runAsync('DELETE FROM recipes WHERE id = ?', id);
   }
 }

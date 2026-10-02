@@ -4,7 +4,7 @@ An early-stage project for analyzing short videos and turning their structure in
 
 ## Project areas
 
-- `apps/mobile/` — Expo and React Native iOS/Android interface prototype. Manual video import and section review are present; local template recipe storage works, while analysis and rendering remain disconnected. See its [README](apps/mobile/README.md) for setup and current limits.
+- `apps/mobile/` — Expo and React Native iOS/Android MVP candidate. Manual video import/review, recoverable section drafts, and local template recipe storage work; automatic analysis and rendering remain disconnected. See its [README](apps/mobile/README.md) for setup and current limits.
 - `src/videotemplate/` — Python video ingestion, decoding, source description, and template-recipe foundations.
 - `docs/` — product research, design prototype, architecture, and technical contracts.
 - [`docs/product/video_template_workflow_spec.md`](docs/product/video_template_workflow_spec.md) — detailed import, section review, replacement, preview, save, reuse, export, and validation workflow.
@@ -31,4 +31,4 @@ Requires Python 3.11 or newer. Install the project and development dependencies 
 
 ## Status
 
-The mobile app is an early MVP, not a production video editor. It supports manual section review and on-device storage of reusable template recipes. Automatic video analysis, media replacement and rendering, audio editing, export, accounts, notifications, and billing remain future work.
+The mobile app is an early MVP, not a production video editor. It supports manual section review, on-device recovery of one unfinished project, and local storage of reusable template recipes. Automatic video analysis, media replacement and rendering, audio editing, export, accounts, notifications, and billing remain future work.

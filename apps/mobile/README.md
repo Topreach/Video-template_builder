@@ -25,8 +25,8 @@ Feature screens own their behavior and UI. Keep shared components generic; use n
 
 ## Current capability and limits
 
-- Connected: native video-library picker, selected-video preview, 30-second duration gate, manual time-based section splitting, explicit Edit/Keep/Exclude choices, local recipe save/list/reopen/rename/duplicate/delete through a versioned SQLite repository.
+- Connected: native video-library picker, selected-video preview, 30-second duration gate, manual time-based section splitting, explicit Edit/Keep/Exclude choices, local recipe save/list/reopen/rename/duplicate/delete, and one recoverable local project draft through versioned SQLite repositories.
 - Sample only: automatic section boundaries/roles, replacement suggestions, source-video rendering, fill-with-new-footage, and MP4 output.
-- Not connected: automatic scene detection, analysis API, source-media persistence, audio editing, visual transformations, export/rendering, authentication, push notifications, and billing.
+- Not connected: automatic scene detection, analysis API, durable source-media persistence (draft resume asks the user to reselect the source), audio editing, visual transformations, export/rendering, authentication, push notifications, and billing.
 
-Saved recipes store timing and user decisions, not the source video or picker URI. Do not represent manual sections as analysis results. Keep generated and user-approved decisions distinct when the real analysis contract is introduced.
+Saved recipes and project drafts store timing and user decisions, not the source video or picker URI. Drafts currently keep only source technical facts; resume asks the user to reselect the clip and confirms if those facts differ. Do not represent manual sections as analysis results. Keep generated and user-approved decisions distinct when the real analysis contract is introduced.

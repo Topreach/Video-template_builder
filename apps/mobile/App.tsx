@@ -15,6 +15,8 @@ import { palette } from './src/shared/theme';
 import { SectionDecision, ScreenName } from './src/shared/sampleData';
 import { EditableSectionSpan, sectionDuration } from './src/features/section-review/types';
 import { ImportedVideo } from './src/features/import/types';
+import { projectDraftRepository } from './src/features/project-drafts/SqliteProjectDraftRepository';
+import { DraftSourceFacts, ProjectDraft } from './src/features/project-drafts/types';
 
 export default function App() {
   const [screen, setScreen] = useState<ScreenName>('discover');
@@ -29,7 +31,15 @@ export default function App() {
   const [templateTitle, setTemplateTitle] = useState('My video template');
   const [templateSaving, setTemplateSaving] = useState(false);
   const [templateSaveError, setTemplateSaveError] = useState<string | null>(null);
+  const [draftReady, setDraftReady] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
   const nextSectionId = useRef(1);
+  const draftId = useRef<string | null>(null);
+  const draftSourceFacts = useRef<DraftSourceFacts | null>(null);
+  const restoringDraft = useRef(false);
+  const restoredStage = useRef<ProjectDraft['stage']>('review');
+  const draftGeneration = useRef(0);
+  const deletingDraft = useRef(false);
 
   const includedSections = useMemo(
     () => sections.filter((section) => decisions[section.id] !== 'exclude'),
@@ -48,9 +58,78 @@ export default function App() {
       setLibraryLoading(false);
     }
   };
-  useEffect(() => { void refreshLibrary(); }, []);
+  useEffect(() => {
+    void refreshLibrary();
+    void projectDraftRepository.getActive().then((draft) => {
+      setDraftReady(true);
+      if (!draft) return;
+      Alert.alert('Unfinished project found', 'Resume your saved section decisions? The source video was not stored, so you will need to choose it again.', [
+        { text: 'Discard', style: 'destructive', onPress: () => {
+          void projectDraftRepository.deleteActive().then(() => setHasDraft(false)).catch(() => Alert.alert('Project not discarded', 'The saved draft is still on this device.'));
+        } },
+        { text: 'Resume', onPress: () => {
+          draftId.current = draft.id;
+          draftSourceFacts.current = draft.sourceFacts;
+          restoringDraft.current = true;
+          restoredStage.current = draft.stage;
+          setSections(draft.sections);
+          setDecisions(draft.decisions);
+          nextSectionId.current = Math.max(1, ...draft.sections.map((section) => {
+            const match = /^(?:manual-)?(\d+)$/.exec(section.id);
+            return match ? Number(match[1]) + 1 : 1;
+          }));
+          setHasDraft(true);
+          setScreen('import');
+        } },
+      ]);
+    }).catch(() => {
+      setDraftReady(true);
+      Alert.alert('Draft unavailable', 'The saved project could not be opened safely. Its data has been preserved.');
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!draftReady || !draftId.current || !draftSourceFacts.current || sections.length === 0) return;
+    const generation = draftGeneration.current;
+    const timer = setTimeout(() => {
+      if (generation !== draftGeneration.current || deletingDraft.current || !draftId.current) return;
+      const stage: ProjectDraft['stage'] = restoringDraft.current
+        ? restoredStage.current
+        : screen === 'adapt' || screen === 'template-preview' ? 'adapt' : screen === 'review' ? 'review' : 'import';
+      const draft: ProjectDraft = {
+        id: draftId.current!,
+        schemaVersion: 1,
+        updatedAt: new Date().toISOString(),
+        stage,
+        sourceFacts: draftSourceFacts.current!,
+        sections,
+        decisions,
+      };
+      void projectDraftRepository.save(draft).then(() => setHasDraft(true)).catch(() => {
+        Alert.alert('Draft could not be saved', 'Your current edits remain on screen, but may not survive closing the app.');
+      });
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [draftReady, screen, sections, decisions]);
 
   const startNewTemplate = () => {
+    if (draftId.current && hasDraft) {
+      Alert.alert('Start a new template?', 'This replaces your current unfinished project.', [
+        { text: 'Keep editing', style: 'cancel' },
+        { text: 'Start new', style: 'destructive', onPress: () => {
+          void deleteActiveDraft().then(() => resetForNewTemplate()).catch(() => Alert.alert('Could not start a new project', 'Your unfinished project is still saved.'));
+        } },
+      ]);
+      return;
+    }
+    resetForNewTemplate();
+  };
+
+  const resetForNewTemplate = () => {
+    draftId.current = null;
+    draftSourceFacts.current = null;
+    restoringDraft.current = false;
+    setHasDraft(false);
     setSelectedVideo(null);
     setSections([]);
     setDecisions({});
@@ -58,6 +137,20 @@ export default function App() {
     setTemplateTitle('My video template');
     setTemplateSaveError(null);
     setScreen('import');
+  };
+
+  const deleteActiveDraft = async () => {
+    draftGeneration.current += 1;
+    deletingDraft.current = true;
+    try {
+      await projectDraftRepository.deleteActive();
+      draftId.current = null;
+      draftSourceFacts.current = null;
+      restoringDraft.current = false;
+      setHasDraft(false);
+    } finally {
+      deletingDraft.current = false;
+    }
   };
 
   const goBack = () => {
@@ -73,6 +166,57 @@ export default function App() {
   };
 
   const setImportedVideo = (video: ImportedVideo) => {
+    if (restoringDraft.current) {
+      const expected = draftSourceFacts.current;
+      const sameFacts = !!expected
+        && Math.abs((video.durationSeconds ?? 0) - expected.durationSeconds) < 0.2
+        && video.width === expected.width
+        && video.height === expected.height
+        && (expected.fileSizeBytes === undefined || video.fileSizeBytes === expected.fileSizeBytes);
+      const resumeWithVideo = () => {
+        if (!video.durationSeconds || video.durationSeconds <= 0 || video.durationSeconds > 30) {
+          Alert.alert('This video cannot resume the project', 'Choose a readable source that is 30 seconds or shorter. Your saved section decisions are unchanged.');
+          return;
+        }
+        restoringDraft.current = false;
+        setSelectedVideo(video);
+        setScreen(restoredStage.current);
+      };
+      if (!sameFacts) {
+        Alert.alert('Video details differ', 'This does not appear to be the same source as the unfinished project. Continue with it anyway?', [
+          { text: 'Choose another', style: 'cancel' },
+          { text: 'Continue', onPress: resumeWithVideo },
+        ]);
+      } else {
+        resumeWithVideo();
+      }
+      return;
+    }
+    if (draftId.current && hasDraft && selectedVideo) {
+      const sameSource = selectedVideo.durationSeconds === video.durationSeconds
+        && selectedVideo.width === video.width
+        && selectedVideo.height === video.height
+        && Math.abs((selectedVideo.durationSeconds ?? 0) - (video.durationSeconds ?? 0)) < 0.2
+        && (selectedVideo.fileSizeBytes === undefined || video.fileSizeBytes === undefined || selectedVideo.fileSizeBytes === video.fileSizeBytes);
+      if (!sameSource) {
+        Alert.alert('Replace this unfinished project?', 'Choosing a different source starts a new project and removes the current draft.', [
+          { text: 'Keep current project', style: 'cancel' },
+          { text: 'Replace project', style: 'destructive', onPress: () => {
+            void deleteActiveDraft().then(() => {
+              setImportedVideo(video);
+            }).catch(() => Alert.alert('Could not replace project', 'Your unfinished project is still saved.'));
+          } },
+        ]);
+        return;
+      }
+    }
+    const facts: DraftSourceFacts | null = video.durationSeconds && video.durationSeconds > 0 && video.durationSeconds <= 30
+      ? { durationSeconds: video.durationSeconds, width: video.width, height: video.height, fileSizeBytes: video.fileSizeBytes }
+      : null;
+    if (facts) {
+      draftId.current = createTemplateId();
+      draftSourceFacts.current = facts;
+    }
     setSelectedVideo(video);
     setActiveTemplate(null);
     setTemplateTitle('My video template');
@@ -81,12 +225,23 @@ export default function App() {
     setSections(video.durationSeconds && video.durationSeconds > 0 && video.durationSeconds <= 30
       ? [makeManualSection(1, 0, video.durationSeconds)]
       : []);
+    setHasDraft(!!facts);
   };
 
   const updateDetectedDuration = (duration: number) => {
     if (selectedVideo?.durationSeconds !== null && selectedVideo?.durationSeconds !== undefined
       && Math.abs(selectedVideo.durationSeconds - duration) < 0.1) return;
     setSelectedVideo((video) => video ? { ...video, durationSeconds: duration } : video);
+    if (!draftId.current && selectedVideo && duration > 0 && duration <= 30) {
+      draftId.current = createTemplateId();
+      draftSourceFacts.current = {
+        durationSeconds: duration,
+        width: selectedVideo.width,
+        height: selectedVideo.height,
+        fileSizeBytes: selectedVideo.fileSizeBytes,
+      };
+      setHasDraft(true);
+    }
     if (sections.length <= 1 && sections.every((section) => !decisions[section.id])) {
       setSections(duration > 0 && duration <= 30 ? [makeManualSection(1, 0, duration)] : []);
       setDecisions({});
@@ -149,6 +304,13 @@ export default function App() {
     setTemplateSaveError(null);
     try {
       await recipeRepository.save(recipe);
+      if (!activeTemplate) {
+        try {
+          await deleteActiveDraft();
+        } catch {
+          Alert.alert('Template saved; draft cleanup is pending', 'Your template is in the library. The unfinished-project draft remains on this device and can be discarded from the import screen.');
+        }
+      }
       setActiveTemplate(recipe);
       setTemplateTitle(recipe.title);
       await refreshLibrary();
@@ -225,7 +387,12 @@ export default function App() {
       <AppHeader showBack={screen !== 'discover' && screen !== 'library'} onBack={goBack} onProfile={() => setScreen('profile')} />
       <View style={styles.content}>
         {screen === 'discover' && <DiscoverScreen onCreate={startNewTemplate} onBrowse={() => setScreen('library')} onUseRecipe={() => setScreen('library')} />}
-        {screen === 'import' && <ImportScreen selectedVideo={selectedVideo} onVideoSelected={setImportedVideo} onDurationReady={updateDetectedDuration} onChooseVideoError={(message) => Alert.alert('Video unavailable', message)} onContinue={() => setScreen('review')} />}
+        {screen === 'import' && <ImportScreen selectedVideo={selectedVideo} restoringDraft={restoringDraft.current} hasDraft={hasDraft} onDiscardDraft={() => {
+          Alert.alert('Discard unfinished project?', 'This removes its saved section decisions from this device.', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Discard', style: 'destructive', onPress: () => { void deleteActiveDraft().then(() => resetForNewTemplate()).catch(() => Alert.alert('Project not discarded', 'The saved draft is still on this device.')); } },
+          ]);
+        }} onVideoSelected={setImportedVideo} onDurationReady={updateDetectedDuration} onChooseVideoError={(message) => Alert.alert('Video unavailable', message)} onContinue={() => setScreen('review')} />}
         {screen === 'review' && <ReviewScreen sourceVideo={selectedVideo} sections={sections} decisions={decisions} onDecision={(id, decision) => setDecisions((old) => ({ ...old, [id]: decision }))} onSplitAt={splitSectionAt} includedCount={includedSections.length} runtime={runtime} onNext={() => setScreen('adapt')} />}
         {screen === 'adapt' && <AdaptScreen ideaSelected={ideaSelected} onSelectIdea={() => setIdeaSelected(true)} onPreview={() => setScreen('template-preview')} />}
         {screen === 'template-preview' && <TemplatePreviewScreen title={templateTitle} sections={previewSections} sourceDurationSeconds={sourceDuration} runtime={previewRuntime} isSaved={activeTemplate !== null} saving={templateSaving} error={templateSaveError} onTitleChange={setTemplateTitle} onSave={saveTemplate} />}

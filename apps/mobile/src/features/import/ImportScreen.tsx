@@ -12,9 +12,12 @@ type Props = {
   onDurationReady: (duration: number) => void;
   onChooseVideoError: (message: string) => void;
   onContinue: () => void;
+  restoringDraft: boolean;
+  hasDraft: boolean;
+  onDiscardDraft: () => void;
 };
 
-export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, onChooseVideoError, onContinue }: Props) {
+export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, onChooseVideoError, onContinue, restoringDraft, hasDraft, onDiscardDraft }: Props) {
   const [selecting, setSelecting] = useState(false);
   const duration = selectedVideo?.durationSeconds;
   const exceedsLimit = duration !== null && duration !== undefined && duration > 30;
@@ -60,7 +63,7 @@ export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, 
   }
 
   return <Page footer={<View style={styles.footer}><PrimaryButton title={exceedsLimit ? 'Choose a video under 30 seconds' : ready ? 'Set up video moments' : 'Choose a video to continue'} disabled={!ready} onPress={onContinue} /><Text style={styles.footnote}>Your original file is not modified.</Text></View>}>
-    <StepLabel number="01">START WITH A REFERENCE</StepLabel><Title>Bring the video.{'\n'}Keep the good parts.</Title><Body>Set up moments to reuse. Automatic scene suggestions are planned for a later step.</Body>
+    <StepLabel number="01">START WITH A REFERENCE</StepLabel><Title>{restoringDraft ? 'Choose your source video again.' : <>Bring the video.{'\n'}Keep the good parts.</>}</Title><Body>{restoringDraft ? 'Your section decisions were saved. Choose the original video again to preview it and continue.' : 'Set up moments to reuse. Automatic scene suggestions are planned for a later step.'}</Body>
     {!selectedVideo ? <View style={styles.upload}><View style={styles.uploadIcon}><Text style={styles.uploadArrow}>↑</Text></View><Text style={styles.uploadTitle}>Choose a video</Text><Text style={styles.uploadMeta}>From your device · up to 30 seconds</Text><SecondaryButton title={selecting ? 'Opening library…' : 'Choose from library'} onPress={chooseVideo} /></View> : <>
       <SelectedVideoPreview uri={selectedVideo.uri} onDuration={onDurationReady} />
       <View style={styles.fileRow}><View style={{ flex: 1 }}><Text style={styles.fileName} numberOfLines={1}>{selectedVideo.fileName}</Text><Text style={styles.fileMeta}>{duration && duration > 0 ? `${duration.toFixed(1)} sec` : 'Checking duration…'} · {selectedVideo.width} × {selectedVideo.height}</Text></View><Pressable onPress={chooseVideo} accessibilityRole="button"><Text style={styles.change}>Change</Text></Pressable></View>
@@ -68,6 +71,7 @@ export function ImportScreen({ selectedVideo, onVideoSelected, onDurationReady, 
     </>}
     <View style={styles.explainer}><View style={styles.or}><View style={styles.rule} /><Text style={styles.orText}>WHAT HAPPENS NEXT</Text><View style={styles.rule} /></View><InfoCard title="You choose every moment" icon="i">Divide the clip into moments, then mark each Edit, Keep, or Exclude before saving.</InfoCard></View>
     <View style={styles.previewNote}><Eyebrow>BUILD STATUS</Eyebrow><Text style={styles.previewNoteText}>Video picking, local preview, and the 30-second gate are connected. Manual moment setup works now; automatic scene detection is still to come.</Text></View>
+    {hasDraft && <Pressable onPress={onDiscardDraft} accessibilityRole="button" style={styles.discard}><Text style={styles.discardText}>Discard unfinished project</Text></Pressable>}
   </Page>;
 }
 
@@ -93,4 +97,6 @@ const styles = StyleSheet.create({
   orText: { color: '#A3A0AD', fontSize: 8, letterSpacing: .8 },
   previewNote: { backgroundColor: '#FFF', borderRadius: 10, borderColor: palette.line, borderWidth: 1, padding: 10, marginTop: 16 },
   previewNoteText: { color: '#777582', fontSize: 9, lineHeight: 14, marginTop: 5 },
+  discard: { alignSelf: 'center', padding: 12, marginTop: 4 },
+  discardText: { color: '#A64F42', fontSize: 10, fontWeight: '700' },
 });
