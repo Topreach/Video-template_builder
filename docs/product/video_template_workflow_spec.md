@@ -1,8 +1,8 @@
-﻿# Video-to-Template Workflow: Product and Technical Specification
+# Video-to-Template Workflow: Product and Technical Specification
 
 **Status:** Research baseline for the first end-to-end workflow; implementation gates remain open where device measurements or user research are required.
 **Updated:** 2 October 2026
-**Related:** [MVP product blueprint](mvp_product_blueprint.md), [MVP architecture and build plan](mvp_architecture_and_build_plan.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile UI specification](../design/mobile_frontend_design_spec.md), [feature map](../architecture/feature-map.md).
+**Related:** [MVP product blueprint](mvp_product_blueprint.md), [MVP architecture and build plan](mvp_architecture_and_build_plan.md), [analysis signal strategy](video_analysis_signal_strategy.md), [coverage/decision map](mvp_coverage_and_traceability.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile UI specification](../design/mobile_frontend_design_spec.md), [feature map](../architecture/feature-map.md).
 
 ## 1. Purpose and product promise
 
@@ -18,7 +18,7 @@ The first complete workflow must let a user:
 6. Save a versioned, editable private template.
 7. Reopen the template, attach their own replacement media, preview, and export an MP4.
 
-The product must not claim the video is â€œcopyright safeâ€ because the user changed a song, text, person, or background. It must not promise virality or claim a detected section role is a fact.
+The product must not claim the video is "copyright safe" because the user changed a song, text, person, or background. It must not promise virality or claim a detected section role is a fact.
 
 ## 2. Important distinction: a cut is not a story section
 
@@ -121,7 +121,7 @@ Required operations:
 
 The cards should be the default interface. A compact timeline is a precision aid, not a mandatory navigation mode. Use redundant text/icon/state cues, accessible names, and touch targets suitable for the platform. Low-confidence areas should say what is uncertain and offer correction; do not use color alone.
 
-**Attached or mismatched content:** there is no reliable universal detector for â€œan attached videoâ€ versus intentional transitions, reaction overlays, split screens, or montages. The app can flag evidence such as an abrupt splice, incompatible audio, black lead-in/out, or a duplicated/frozen span. The user decides whether to keep, edit, or exclude it. Ask a lightweight optional question if useful: â€œDoes this clip include parts you donâ€™t want in the template?â€ Do not make users classify their file before seeing the analysis.
+**Attached or mismatched content:** there is no reliable universal detector for "an attached video" versus intentional transitions, reaction overlays, split screens, or montages. The app can flag evidence such as an abrupt splice, incompatible audio, black lead-in/out, or a duplicated/frozen span. The user decides whether to keep, edit, or exclude it. Ask a lightweight optional question if useful: "Does this clip include parts you don't want in the template?" Do not make users classify their file before seeing the analysis.
 
 ### 4.4 Decide what each section means for the template
 
@@ -139,7 +139,7 @@ Suggestions should be concrete and explain their fit. Each suggestion includes:
 
 - A capture/use prompt (subject, action, framing, approximate duration, optional movement).
 - Which template role/visual cue it responds to.
-- Why it may fit (e.g. â€œkeeps the fast close-up reveal in this sectionâ€).
+- Why it may fit (e.g. "keeps the fast close-up reveal in this section").
 - Source type: prompt only, user's library, licensed library, or generated media.
 - Rights/attribution information when an actual asset is supplied.
 - Actions: Use, Edit prompt, Save for later, Skip, Try another.
@@ -150,12 +150,12 @@ Support distinct patterns without forcing one beat grid on everything:
 
 | Format family | Useful cues | Replacement idea example | Timing default |
 |---|---|---|---|
-| Song / beat edit | beat markers, repeated chorus, lyric/caption timing | â€œFilm three quick detail shots, one per beatâ€ | beat-aligned, user-adjustable |
-| Film / cinematic | shot scale, atmosphere, movement, reveal | â€œUse a wide establishing shot, then a close detailâ€ | hold timing or choose target duration |
-| Action | motion direction, impact moments, camera movement | â€œCapture the same action from a safe, stable angleâ€ | preserve action interval; avoid forced beat cuts |
-| Comedy / funny | setup, pause, reaction, punchline | â€œShow the reaction after a short pause; write a new punchlineâ€ | preserve pause and payoff relation |
-| Story / dialogue | speech turns, claims, evidence, resolution | â€œReplace the personal anecdote with your own exampleâ€ | speech-led; allow subtitle timing edits |
-| Tutorial / product | steps, demonstration, result, CTA | â€œShow the result first, then one close-up of the processâ€ | step order; allow optional sections |
+| Song / beat edit | beat markers, repeated chorus, lyric/caption timing | "Film three quick detail shots, one per beat" | beat-aligned, user-adjustable |
+| Film / cinematic | shot scale, atmosphere, movement, reveal | "Use a wide establishing shot, then a close detail" | hold timing or choose target duration |
+| Action | motion direction, impact moments, camera movement | "Capture the same action from a safe, stable angle" | preserve action interval; avoid forced beat cuts |
+| Comedy / funny | setup, pause, reaction, punchline | "Show the reaction after a short pause; write a new punchline" | preserve pause and payoff relation |
+| Story / dialogue | speech turns, claims, evidence, resolution | "Replace the personal anecdote with your own example" | speech-led; allow subtitle timing edits |
+| Tutorial / product | steps, demonstration, result, CTA | "Show the result first, then one close-up of the process" | step order; allow optional sections |
 
 Role/category detection is a draft label, not a fact. User edits must be possible even if OCR/transcription fails or the clip has no sound.
 
@@ -320,7 +320,7 @@ Before enabling a feature on both platforms, render the same recipe and compare:
 
 Assemble a permissioned evaluation set of short videos with no public redistribution requirement. Include song/beat edits, film/cinematic montage, action, comedy, dialogue/story, tutorial/product, and clips with attached or split-screen content. Vary complete/partial starts and endings, portrait/landscape/square, 24/30/60fps, low/high compression, low light, flashes, camera motion, subtitles, no-audio, speech, music, and overlap. Keep source identity and consent metadata separate from annotations.
 
-Have at least two annotators mark shot boundaries, useful reusable sections, role tags (including â€œunknownâ€), unwanted spans, and replacement prompts; adjudicate disagreements. Measure inter-annotator agreement before treating a role as an objective ground truth.
+Have at least two annotators mark shot boundaries, useful reusable sections, role tags (including "unknown"), unwanted spans, and replacement prompts; adjudicate disagreements. Measure inter-annotator agreement before treating a role as an objective ground truth.
 
 ### Detector and experience measures
 
@@ -346,23 +346,23 @@ Test novice creators and experienced short-form editors; include large text scal
 
 ## 9. Release gates
 
-### Gate 1 â€” Workflow truthfulness
+### Gate 1 -- Workflow truthfulness
 
 Demo data is separated from real projects; source, analysis proposal, user decision, and final recipe have visibly distinct states; an analysis failure can be completed manually.
 
-### Gate 2 â€” Section editing
+### Gate 2 -- Section editing
 
 On representative devices, users can trim/split/merge/reorder and mark Edit/Keep/Exclude with undo. Tests confirm excluded spans never enter the output plan, and rerunning analysis never overwrites user edits.
 
-### Gate 3 â€” Replacement and rights comprehension
+### Gate 3 -- Replacement and rights comprehension
 
 Users can tell prompt ideas from supplied assets, can choose their own media, and do not interpret audio/text changes as a rights guarantee. Any retained reference media is explicit before save/export.
 
-### Gate 4 â€” Preview/export parity
+### Gate 4 -- Preview/export parity
 
 Supported effects preview and export consistently on iOS and Android within agreed frame/audio tolerances. Unsupported effects are rejected or removed with explanation before render; exports reopen and validate as MP4.
 
-### Gate 5 â€” Privacy and recovery
+### Gate 5 -- Privacy and recovery
 
 Processing location and retention are disclosed. Cancel, deletion, low storage, app interruption, network failure, and render failure preserve the recipe and user's explicit decisions and do not leave undeclared source copies.
 
