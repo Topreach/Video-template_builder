@@ -88,7 +88,19 @@ Analysis proposal content for the first workflow:
 - Optional OCR/transcript/audio-beat findings only when the chosen capability is reliable and consented; each result carries timestamp, language/status, source method, and uncertainty.
 - Optional role suggestions with a short explanation. No role is required to proceed.
 
-Initial boundary proposal should combine a fast, interpretable cut detector with review, rather than require a generative model. Candidate implementation: run PySceneDetect's adaptive/content detectors over a normalized decode path, then apply configurable minimum-distance suppression and thumbnail extraction. Compare its results with the current PyAV inspection pipeline and an annotated sample set before selecting thresholds. Rapid music cuts, flashes, camera motion, fades, picture-in-picture, and montage effects are explicit adversarial cases; no default threshold should be called universal.
+Initial boundary proposal should combine a fast cut detector with review, rather than require a generative model. Evidence does not support treating any detector as universally reliable for social clips:
+
+| Candidate | Published evidence | Practical implication / limitation |
+|---|---|---|
+| PySceneDetect AdaptiveDetector | The current project benchmark reports, on ClipShots hard cuts, precision 41.25%, recall 85.97%, F1 55.75%; on ClipShots fades, precision 98.12%, recall 13.65%, F1 23.96%. Its AutoShot-set F1 is 73.86%. [Benchmark](https://www.scenedetect.com/benchmarks/) | Good baseline to test; high recall can yield many false cut proposals on web clips and fades are a separate detector problem. User review and grouping remain essential. |
+| TransNet V2 | The project repository reports its reevaluation F1 as 77.9 on ClipShots, 96.2 on BBC Planet Earth, and 93.9 on RAI. [Repository](https://github.com/soCzech/TransNetV2) | Promising learned baseline, but these scores are not directly comparable to PySceneDetect's current benchmark because evaluation setup/thresholds may differ. Official inference docs describe TensorFlow 2.1 and FFmpeg requirements; packaging/runtime, model size, licensing of all dependencies, and mobile/server performance need verification. [Inference instructions](https://github.com/soCzech/TransNetV2/tree/master/inference) |
+| AutoShot | The paper introduces the short-video SHOT dataset (853 videos; 200-video, expert-reviewed test split) and reports gains over prior methods on its benchmark and several public datasets. [Paper](https://arxiv.org/abs/2304.06116), [project repository](https://github.com/wentaozhu/AutoShot) | Domain-relevant research candidate; deployment maturity, model acquisition, reproducibility, model/data terms, packaging and CPU/device performance need due diligence. MIT code license alone does not grant rights to input videos or automatically resolve model/data restrictions. |
+
+PySceneDetect's results also show dataset/transition-type sensitivity: its adaptive detector is much stronger on broadcast documentary than ClipShots short web cuts, and it misses most fades in the cited short-web benchmark. TransNet V2 and PySceneDetect numbers above must not be presented as an apples-to-apples product comparison. Public test results are a candidate shortlist only, not evidence of performance on our creator categories.
+
+**Recommended detector spike:** run PySceneDetect AdaptiveDetector and TransNet V2 on the same permissioned/eligible corpus and evaluation script. Add AutoShot only after confirming usable weights, reproducible inference, license/data terms, and acceptable packaging. Include hard cuts, multi-step wipes/dissolves, flashes, rapid beat edits, picture-in-picture/ternary layouts, camera motion, screen/game capture, VFR, corruption, and no-audio. Annotate boundaries and creative sections separately. Report per-family precision/recall/F1 with stated frame/time tolerance, correction count/time, runtime, peak memory, energy/network transfer, and failure rate. Do not tune on the final holdout set.
+
+For the first usable release, detected cuts are candidate markers only. Keep manual add/split/merge/group/reorder controls independent of detector choice. Do not translate every detected shot into a separate template slot: rapid edits can belong to one creative section, while one uncut shot can contain multiple story sections. No automatic exclusion or story-role classification should ship without separate annotation and user-validation evidence.
 
 If analysis fails or times out, keep the selected local asset and allow **Create sections manually**. Never create fabricated sample boundaries and label them as analysis.
 
@@ -358,7 +370,7 @@ Processing location and retention are disclosed. Cancel, deletion, low storage, 
 
 1. Build a real project-state model and interfaces around current screens; leave the visible workflow intact.
 2. Add explicit manual section creation and the Edit/Keep/Exclude persisted decision model before integrating analysis.
-3. Create a small consented clip evaluation set and compare PySceneDetect-based cut proposals with manual annotations; include no-audio and motion-heavy cases.
+3. Create a permissioned clip evaluation set and compare PySceneDetect and TransNet V2 proposals with manual boundary annotations; include no-audio and motion-heavy cases, and evaluate creative section grouping separately.
 4. Implement local import metadata and local draft persistence; do not require accounts for the first private workflow.
 5. Run the local-vs-ephemeral-server analysis and iOS-vs-Android renderer spikes before committing to those execution models.
 6. Add replacement prompts as transparent, user-approved cards. Defer generated people/backgrounds and any public marketplace.
@@ -370,6 +382,7 @@ This sequence produces a useful, testable product even if automatic semantic int
 Official or project-maintained technical documentation checked 2 October 2026:
 
 - PySceneDetect [detector API](https://www.scenedetect.com/docs/latest/api/detectors.html), [CLI guidance](https://www.scenedetect.com/docs/latest/cli.html), [BSD-3-Clause license](https://github.com/Breakthrough/PySceneDetect/blob/main/LICENSE).
+- PySceneDetect [published cross-dataset benchmark](https://www.scenedetect.com/benchmarks/); TransNet V2 [paper](https://arxiv.org/abs/2008.04838), [inference instructions](https://github.com/soCzech/TransNetV2/tree/master/inference), and [repository-reported comparison](https://github.com/soCzech/TransNetV2); AutoShot [short-video SBD paper](https://arxiv.org/abs/2304.06116) and [project repository/license](https://github.com/wentaozhu/AutoShot).
 - Expo [custom native code](https://docs.expo.dev/workflow/customizing/), [development builds](https://docs.expo.dev/develop/development-builds/introduction/).
 - Android [Media3 Composition](https://developer.android.com/media/media3/transformer/composition), [CompositionPlayer](https://developer.android.com/media/media3/transformer/compositionplayer).
 - Apple [AVMutableComposition](https://developer.apple.com/documentation/avfoundation/avmutablecomposition), [AVAssetExportSession](https://developer.apple.com/documentation/avfoundation/avassetexportsession), [Vision person mattes](https://developer.apple.com/documentation/vision/applying-matte-effects-to-people-in-images-and-video).
