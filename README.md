@@ -10,6 +10,7 @@ An early-stage project for analyzing short videos and turning their structure in
 - [`docs/product/video_template_workflow_spec.md`](docs/product/video_template_workflow_spec.md) — detailed import, section review, replacement, preview, save, reuse, export, and validation workflow.
 - [`docs/product/mvp_coverage_and_traceability.md`](docs/product/mvp_coverage_and_traceability.md) — requirement coverage, release scenarios, open decisions, and implementation traceability.
 - [`docs/product/video_analysis_signal_strategy.md`](docs/product/video_analysis_signal_strategy.md) — OCR, speech, beat, visual cues, and replacement-suggestion research for video analysis.
+- [`docs/product/rendering_capability_and_quality_gate.md`](docs/product/rendering_capability_and_quality_gate.md) — iOS/Android rendering options, export behavior, and the parity spike required before locking a renderer.
 - `_s23_*` and `_s23_fixtures/` — reproducibility scripts, recorded evidence, and small media fixtures cited by the technical specifications and checks.
 
 ## Mobile app

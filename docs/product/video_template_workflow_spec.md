@@ -2,7 +2,7 @@
 
 **Status:** Research baseline for the first end-to-end workflow; implementation gates remain open where device measurements or user research are required.
 **Updated:** 2 October 2026
-**Related:** [MVP product blueprint](mvp_product_blueprint.md), [MVP architecture and build plan](mvp_architecture_and_build_plan.md), [analysis signal strategy](video_analysis_signal_strategy.md), [coverage/decision map](mvp_coverage_and_traceability.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile UI specification](../design/mobile_frontend_design_spec.md), [feature map](../architecture/feature-map.md).
+**Related:** [MVP product blueprint](mvp_product_blueprint.md), [MVP architecture and build plan](mvp_architecture_and_build_plan.md), [analysis signal strategy](video_analysis_signal_strategy.md), [rendering capability and quality gate](rendering_capability_and_quality_gate.md), [coverage/decision map](mvp_coverage_and_traceability.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile UI specification](../design/mobile_frontend_design_spec.md), [feature map](../architecture/feature-map.md).
 
 ## 1. Purpose and product promise
 
