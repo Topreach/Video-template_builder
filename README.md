@@ -15,6 +15,8 @@ An early-stage project for analyzing short videos and turning their structure in
 
 - [`docs/product/media_privacy_security_and_data_lifecycle.md`](docs/product/media_privacy_security_and_data_lifecycle.md) - media data inventory, threat model, local/cloud storage, backup, deletion, and security release gates.
 
+- [`docs/product/copyright_rights_and_asset_provenance.md`](docs/product/copyright_rights_and_asset_provenance.md) - rights declarations, music and source provenance, replacement-first exports, and legal review gates.
+
 ## Mobile app
 
 ```powershell

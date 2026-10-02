@@ -131,7 +131,7 @@ Define the actions precisely:
 - **Keep:** include the section's timing and treatment as fixed template material. During template authoring, make clear that this keeps the reference material in the private recipe/preview. Do not include it in a public or final export by default unless the user explicitly confirms ownership/permission and the output screen shows it remains.
 - **Exclude:** leave this span out of the recipe and all downstream renders. Preserve it only in the source analysis until the user deletes the source/project.
 
-Because reuse should default to the user's own footage, final creation should make **Edit** slots easy to fill and clearly identify any retained reference media. Before final save, show a retained-reference-content count and require explicit acknowledgment when any source media remains. Provide **Replace all reference media** as a guided shortcut.
+Because reuse should default to the user's own footage, final creation should make **Edit** slots easy to fill and clearly identify any retained reference media. Before final save, show a retained-reference-content count and require explicit acknowledgment when any source media remains. Provide **Replace all reference media** as a guided shortcut. If rights are unknown, offer a structure-only recipe path with reference pixels/audio omitted; do not mark the source or resulting recipe as rights-cleared. See the [copyright, rights, and provenance requirements](copyright_rights_and_asset_provenance.md).
 
 ### 4.5 Suggest replacements and creative alternatives
 
@@ -163,7 +163,7 @@ Role/category detection is a draft label, not a fact. User edits must be possibl
 
 Represent source audio, replacement music, narration, effects, captions, and titles as separate optional recipe layers. MVP controls: replace/mute source audio, select supplied licensed or user-owned audio, edit title/caption text, set timing and volume, and preview the mix. Tone suggestions (e.g. playful, calm, tense, energetic) are optional and never applied without acceptance.
 
-Track the provenance of an actual media asset, license/permission notes, attribution, permitted destinations, and expiry where applicable. A prompt is not an audio license. Rewording lyrics or captions, changing pitch, muting a track, or selecting a different song does not clear rights to footage, performances, compositions, sound recordings, likenesses, or trademarks. Copyright Office materials distinguish musical compositions from sound recordings; obtain jurisdiction-specific legal review before launch claims or public remix features. [U.S. Copyright Office, Copyright and the Music Marketplace](https://www.copyright.gov/engage/docs/recording.pdf), [fair-use FAQ](https://www.copyright.gov/help/faq/faq-fairuse.html).
+Track the provenance of an actual media asset, license/permission notes, attribution, permitted destinations, and expiry where applicable. A prompt is not an audio license. Rewording lyrics or captions, changing pitch, muting a track, or selecting a different song does not clear rights to footage, performances, compositions, sound recordings, likenesses, or trademarks. Copyright Office materials distinguish musical compositions from sound recordings; obtain jurisdiction-specific legal review before launch claims or public remix features. [U.S. Copyright Office, Copyright and the Music Marketplace](https://www.copyright.gov/engage/docs/recording.pdf), [fair-use FAQ](https://www.copyright.gov/help/faq/faq-fairuse.html). Follow the [asset and rights UX/data requirements](copyright_rights_and_asset_provenance.md) for import acknowledgments, retained-source state, license scope, and output labels.
 
 ### 4.7 Recipe preview and save
 
@@ -188,6 +188,7 @@ Before export, validate:
 - Excluded source spans are absent.
 - Unsupported effects are removed or clearly disabled.
 - Crop, aspect ratio, audio mix, text clipping, and rights/provenance summary are visible.
+- Unknown rights are not shown as cleared; retained reference video/audio/text is itemized, with replace, mute, exclude, or stop actions as applicable.
 - The chosen output profile states dimensions, frame rate policy, audio policy, and file type.
 
 Export MP4 to app-managed temporary storage, verify that the output can be reopened/decoded, then offer save-to-device/share-sheet actions. Preserve the editable recipe separately. On low storage, cancellation, interrupted app lifecycle, or encode error, keep the recipe and render inputs so the user can retry; never report completion before output validation.
