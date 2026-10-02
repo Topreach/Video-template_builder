@@ -1,6 +1,6 @@
-# Remix Mobile App Spike
+# Remix Mobile App
 
-This iOS/Android app is an isolated Expo + React Native + TypeScript user-interface spike. Expo is a candidate implementation, not a final renderer or architecture decision. The video analysis and render pipeline are not connected yet.
+This iOS/Android app is an early Expo + React Native + TypeScript MVP candidate, not a finished video editor. Automatic video analysis, replacement-media editing, and rendering are not connected. Expo remains a reversible interface choice, not a final renderer decision. See the [implementation cross-check](../../docs/product/mobile_mvp_implementation_audit.md) for feature-by-feature status and next steps.
 
 ## Run locally
 
@@ -15,9 +15,10 @@ Use the Expo development build or Android Studio emulator to open the project. N
 
 - `src/features/discover` — entry screen and starter recipe cards.
 - `src/features/import` — device video picker, duration gate, local preview.
-- `src/features/section-review` — section decision interface; currently clearly marked sample data.
-- `src/features/recipe-editor` — replacement idea and template preview screens.
-- `src/features/template-library` — in-memory preview of saved recipes; durable storage is pending.
+- `src/features/section-review` — manual section splitting and Edit/Keep/Exclude decisions.
+- `src/features/project-drafts` — local recoverable manual project draft.
+- `src/features/recipe-editor` — sample replacement idea and structure-only recipe preview.
+- `src/features/template-library` — SQLite-backed local recipe metadata.
 - `src/features/settings` — account/settings information architecture; services are pending.
 - `src/shared` — design tokens, shared UI, navigation, and sample data.
 

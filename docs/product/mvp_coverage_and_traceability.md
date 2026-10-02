@@ -4,6 +4,8 @@
 **Status:** Coverage baseline as of 2 October 2026. This is a living index; it is not a claim that every unknown or jurisdiction-specific obligation has been discovered.
 **Related:** [Video-to-template workflow specification](video_template_workflow_spec.md), [MVP product blueprint](mvp_product_blueprint.md), [mobile UI specification](../design/mobile_frontend_design_spec.md), [architecture build plan](mvp_architecture_and_build_plan.md), [feature map](../architecture/feature-map.md), [account/security/settings research](../research/account_security_monetization_and_editor_scope.md), [media privacy and lifecycle plan](media_privacy_security_and_data_lifecycle.md), [copyright, rights, and provenance](copyright_rights_and_asset_provenance.md), [technology research](../research/mvp_technology_and_design_research.md), [change-safety plan](../research/software_evolution_and_ai_change_safety.md).
 
+Latest source-level mobile implementation comparison: [Mobile MVP implementation cross-check](mobile_mvp_implementation_audit.md). The statuses below describe requirements/research coverage; they do not mean a feature is implemented unless the source-level audit says Connected.
+
 ## 1. How to use this map
 
 Every user-visible or operational requirement must have:
