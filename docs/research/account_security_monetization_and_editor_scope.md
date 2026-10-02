@@ -2,7 +2,7 @@
 
 **Prepared:** 1 October 2026  
 **Status:** MVP direction agreed: local-first/accountless where feasible, no launch paywall, and no professional editor in v1. Authentication provider, monetization model, and future editor scope remain unselected.  
-**Related:** [Mobile frontend design specification](../design/mobile_frontend_design_spec.md), [MVP product blueprint](../product/mvp_product_blueprint.md), [technology research](mvp_technology_and_design_research.md)
+**Related:** [Mobile frontend design specification](../design/mobile_frontend_design_spec.md), [MVP product blueprint](../product/mvp_product_blueprint.md), [technology research](mvp_technology_and_design_research.md), [media privacy and lifecycle plan](../product/media_privacy_security_and_data_lifecycle.md)
 
 ## 1. Executive decisions
 

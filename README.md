@@ -13,6 +13,8 @@ An early-stage project for analyzing short videos and turning their structure in
 - [`docs/product/rendering_capability_and_quality_gate.md`](docs/product/rendering_capability_and_quality_gate.md) — iOS/Android rendering options, export behavior, and the parity spike required before locking a renderer.
 - `_s23_*` and `_s23_fixtures/` — reproducibility scripts, recorded evidence, and small media fixtures cited by the technical specifications and checks.
 
+- [`docs/product/media_privacy_security_and_data_lifecycle.md`](docs/product/media_privacy_security_and_data_lifecycle.md) - media data inventory, threat model, local/cloud storage, backup, deletion, and security release gates.
+
 ## Mobile app
 
 ```powershell
