@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
+import type { VideoThumbnail } from 'expo-video';
 import { Body, Eyebrow, Page, PrimaryButton, StepLabel, Title } from '../../shared/Components';
 import { SectionDecision } from '../../shared/sampleData';
 import { EditableSectionSpan, sectionDuration } from './types';
@@ -22,6 +24,7 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
   const [splitAt, setSplitAt] = useState('');
   const [splitMessage, setSplitMessage] = useState('');
   const [playhead, setPlayhead] = useState(0);
+  const [thumbnails, setThumbnails] = useState<Record<string, VideoThumbnail>>({});
   const pendingCount = sections.filter((section) => !decisions[section.id]).length;
   const sourceDuration = Math.max(sourceVideo?.durationSeconds ?? 0, ...sections.map((section) => section.endSeconds));
   const canContinue = sections.length > 0 && pendingCount === 0 && includedCount > 0;
@@ -54,12 +57,13 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
     <Body>Review each moment and choose what to change, keep, or leave out.</Body>
     {sourceVideo && <>
       <Text style={styles.videoLabel}>REVIEW THE VIDEO | {sourceVideo.fileName}</Text>
-      <ReviewVideoPlayer uri={sourceVideo.uri} durationSeconds={sourceDuration} onTimeChange={setPlayhead} />
+      <ReviewVideoPlayer uri={sourceVideo.uri} durationSeconds={sourceDuration} onTimeChange={setPlayhead} sections={sections} onThumbnails={setThumbnails} />
     </>}
     <View style={styles.analysisNote}>
       <Text style={styles.analysisMark}>i</Text>
       <Text style={styles.analysisText}>Automatic scene analysis is not connected yet. Your clip starts as one manual moment; split it at the times you choose.</Text>
     </View>
+    {sections.length > 16 && <Text style={styles.thumbnailLimit}>Frame previews are shown for the first 16 moments. All moments remain editable.</Text>}
     <View style={styles.mapHead}>
       <View>
         <Eyebrow>{sections.length} {sections.length === 1 ? 'MOMENT' : 'MOMENTS'}</Eyebrow>
@@ -76,7 +80,9 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
         const start = section.startSeconds;
         const end = section.endSeconds;
         return <View key={section.id} style={[styles.card, selected === 'exclude' && styles.cardExcluded]}>
-          <View style={[styles.thumb, { backgroundColor: color }]}>
+          <View style={[styles.thumb, !thumbnails[section.id] && { backgroundColor: color }]}>
+            {thumbnails[section.id] && <Image source={thumbnails[section.id]} style={styles.thumbImage} contentFit="cover" accessibilityLabel={`Video frame from moment ${index + 1}`} />}
+            <View style={styles.thumbShade} />
             <Text style={styles.thumbIndex}>{String(index + 1).padStart(2, '0')}</Text>
             <Text style={styles.thumbTime}>{formatTimecode(start)}</Text>
           </View>
@@ -129,6 +135,8 @@ const styles = StyleSheet.create({
   card: { flexDirection: 'row', gap: 9, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#ECEBF1', borderRadius: 13, padding: 8 },
   cardExcluded: { opacity: .55, backgroundColor: '#F3F3F5' },
   thumb: { width: 53, minHeight: 94, borderRadius: 9, justifyContent: 'flex-end', alignItems: 'center', overflow: 'hidden' },
+  thumbImage: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
+  thumbShade: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: '#17152D24' },
   thumbIndex: { alignSelf: 'flex-start', position: 'absolute', top: 5, left: 5, color: '#FFF', backgroundColor: '#201D3859', borderRadius: 4, overflow: 'hidden', paddingHorizontal: 4, paddingVertical: 2, fontSize: 7, fontWeight: '700' },
   thumbTime: { color: '#FFF', fontSize: 9, fontWeight: '700', paddingBottom: 9 },
   cardBody: { flex: 1, minWidth: 0 },
@@ -164,6 +172,7 @@ const styles = StyleSheet.create({
   analysisNote: { flexDirection: 'row', gap: 7, backgroundColor: '#F0EFF8', borderRadius: 9, padding: 9, marginTop: 10, marginBottom: 10 },
   analysisMark: { width: 15, height: 15, borderRadius: 8, color: palette.accent, backgroundColor: '#E1DDFB', textAlign: 'center', textAlignVertical: 'center', fontSize: 9, fontWeight: '800' },
   analysisText: { flex: 1, color: '#72707E', fontSize: 8, lineHeight: 12 },
+  thumbnailLimit: { color: '#85828F', fontSize: 8, lineHeight: 12, marginBottom: 8 },
 });
 
 const sectionColors = ['#DFA798', '#87ADB9', '#D39C69', '#AAA8B3'];

@@ -42,7 +42,7 @@ The isolated Expo candidate is in [`apps/mobile`](../../apps/mobile/README.md). 
 - `import`: iOS/Android library picker, local playback, and a source-duration gate at 30 seconds.
 - `analysis`: a local Python CLI prototype proposes adaptive visual shot boundaries and ordered spans through `AnalysisProposal`; it is not connected to the mobile app and has no calibrated confidence. See [ADR 0003](decisions/0003-experimental-local-shot-analysis.md).
 - `project-drafts`: one active, versioned local draft persists source technical facts, manual section ranges, decisions, and workflow stage; media bytes and picker URIs are excluded. Resume requires source reselection.
-- `section-review`: Local playback, timeline seeking, exact-time or playhead splitting, and explicit Edit/Keep/Exclude choices over the selected clip; choices autosave to the active draft. Automatic analysis is not connected.
+- `section-review`: Local playback, timeline seeking, local generated frame previews for up to 16 moments, exact-time or playhead splitting, and explicit Edit/Keep/Exclude choices over the selected clip; choices autosave to the active draft. Automatic analysis is not connected.
 - `recipe-editor`: suggestion and template-preview UI using sample data.
 - `template-library`: local recipe metadata persists through `RecipeRepository` backed by Expo SQLite; the source video is not copied into recipe rows. Database schema v2 adds the project-draft table.
 - `export`, backend analysis, accounts, notification delivery, and billing are not connected.

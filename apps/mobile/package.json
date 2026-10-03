@@ -4,6 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "expo": "~57.0.26",
+    "expo-image": "~57.0.5",
     "expo-image-picker": "~57.0.20",
     "expo-sqlite": "~57.0.3",
     "expo-status-bar": "~57.0.1",

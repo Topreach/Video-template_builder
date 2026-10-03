@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useEvent } from 'expo';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer, VideoView, type VideoThumbnail } from 'expo-video';
 import { palette } from '../../shared/theme';
+import { EditableSectionSpan } from './types';
 
 type Props = {
   uri: string;
   durationSeconds: number;
   onTimeChange: (seconds: number) => void;
+  sections: EditableSectionSpan[];
+  onThumbnails: (thumbnails: Record<string, VideoThumbnail>) => void;
 };
 
-export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange }: Props) {
+const maxMomentThumbnails = 16;
+
+export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange, sections, onThumbnails }: Props) {
   const player = useVideoPlayer(uri, (instance) => {
     instance.loop = false;
     instance.timeUpdateEventInterval = 0.1;
@@ -21,11 +26,35 @@ export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange }: Props)
     currentOffsetFromLive: null,
     bufferedPosition: 0,
   });
+  const sourceLoad = useEvent(player, 'sourceLoad');
   const playing = useEvent(player, 'playingChange', { isPlaying: player.playing });
   const [trackWidth, setTrackWidth] = useState(1);
   const currentTime = Math.min(durationSeconds, Math.max(0, timeUpdate?.currentTime ?? 0));
 
   useEffect(() => onTimeChange(currentTime), [currentTime, onTimeChange]);
+
+  useEffect(() => {
+    const videoDuration = sourceLoad?.duration;
+    const sampleSections = sections.slice(0, maxMomentThumbnails);
+    if (!videoDuration || sampleSections.length === 0) return;
+    let cancelled = false;
+    const times = sampleSections.map((section) => Math.min(
+      (section.startSeconds + section.endSeconds) / 2,
+      Math.max(0, videoDuration - 0.01),
+    ));
+    player.generateThumbnailsAsync(times, { maxWidth: 320, maxHeight: 320 }).then((images) => {
+      if (cancelled) return;
+      const bySection: Record<string, VideoThumbnail> = {};
+      sampleSections.forEach((section, index) => {
+        const image = images[index];
+        if (image) bySection[section.id] = image;
+      });
+      onThumbnails(bySection);
+    }).catch(() => {
+      if (!cancelled) onThumbnails({});
+    });
+    return () => { cancelled = true; };
+  }, [onThumbnails, player, sections, sourceLoad?.duration]);
 
   const seekTo = (seconds: number) => {
     const bounded = Math.min(Math.max(seconds, 0), durationSeconds);
