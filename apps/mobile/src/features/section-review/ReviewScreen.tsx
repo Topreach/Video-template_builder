@@ -5,7 +5,7 @@ import { SectionDecision } from '../../shared/sampleData';
 import { EditableSectionSpan, sectionDuration } from './types';
 import { palette } from '../../shared/theme';
 import { ImportedVideo } from '../import/types';
-import { SelectedVideoPreview } from '../import/SelectedVideoPreview';
+import { ReviewVideoPlayer } from './ReviewVideoPlayer';
 
 type Props = {
   sections: EditableSectionSpan[];
@@ -21,7 +21,9 @@ type Props = {
 export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, includedCount, runtime, onNext, sourceVideo }: Props) {
   const [splitAt, setSplitAt] = useState('');
   const [splitMessage, setSplitMessage] = useState('');
+  const [playhead, setPlayhead] = useState(0);
   const pendingCount = sections.filter((section) => !decisions[section.id]).length;
+  const sourceDuration = Math.max(sourceVideo?.durationSeconds ?? 0, ...sections.map((section) => section.endSeconds));
   const canContinue = sections.length > 0 && pendingCount === 0 && includedCount > 0;
 
   const addSplit = () => {
@@ -34,6 +36,15 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
     setSplitMessage('Moment split. Choose an action for each new part.');
   };
 
+  const splitAtPlayhead = () => {
+    if (!onSplitAt(playhead)) {
+      setSplitMessage('Move the playhead inside a moment before splitting.');
+      return;
+    }
+    setSplitAt('');
+    setSplitMessage(`Moment split at ${playhead.toFixed(1)} seconds. Choose an action for each new part.`);
+  };
+
   return <Page footer={<View style={styles.footer}>
     <PrimaryButton title={pendingCount ? `Choose an action for ${pendingCount} moment${pendingCount === 1 ? '' : 's'}` : 'Review replacement ideas'} disabled={!canContinue} onPress={onNext} />
     <Text style={styles.footnote}>{includedCount} moments included | {runtime.toFixed(1)} sec</Text>
@@ -42,8 +53,8 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
     <Title>Shape the story.</Title>
     <Body>Review each moment and choose what to change, keep, or leave out.</Body>
     {sourceVideo && <>
-      <Text style={styles.videoLabel}>YOUR SELECTED VIDEO | {sourceVideo.fileName}</Text>
-      <SelectedVideoPreview uri={sourceVideo.uri} onDuration={() => {}} />
+      <Text style={styles.videoLabel}>REVIEW THE VIDEO | {sourceVideo.fileName}</Text>
+      <ReviewVideoPlayer uri={sourceVideo.uri} durationSeconds={sourceDuration} onTimeChange={setPlayhead} />
     </>}
     <View style={styles.analysisNote}>
       <Text style={styles.analysisMark}>i</Text>
@@ -91,7 +102,11 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
       })}
     </View>
     <View style={styles.splitBox}>
-      <Text style={styles.splitLabel}>SPLIT AT (SECONDS)</Text>
+      <Text style={styles.splitLabel}>SPLIT THIS MOMENT</Text>
+      <Pressable style={styles.playheadSplit} onPress={splitAtPlayhead} accessibilityRole="button">
+        <Text style={styles.playheadSplitText}>Split at playhead · {formatTimecode(playhead)}</Text>
+      </Pressable>
+      <Text style={styles.exactLabel}>Or enter an exact time in seconds</Text>
       <View style={styles.splitRow}>
         <TextInput value={splitAt} onChangeText={setSplitAt} keyboardType="decimal-pad" placeholder="For example, 4.5" accessibilityLabel="Time in seconds to split the video" style={styles.splitInput} />
         <Pressable style={styles.addSection} onPress={addSplit} accessibilityRole="button"><Text style={styles.addText}>Split moment</Text></Pressable>
@@ -131,6 +146,9 @@ const styles = StyleSheet.create({
   decisionTextSelected: { color: '#5548BE' },
   splitBox: { marginTop: 12, borderRadius: 11, borderWidth: 1, borderColor: palette.line, backgroundColor: '#FFF', padding: 11 },
   splitLabel: { color: '#8A8795', fontSize: 8, letterSpacing: 1, fontWeight: '700' },
+  playheadSplit: { minHeight: 40, marginTop: 8, borderRadius: 9, backgroundColor: palette.accent, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
+  playheadSplitText: { color: '#FFF', fontSize: 10, fontWeight: '700' },
+  exactLabel: { color: '#8A8795', fontSize: 8, marginTop: 10 },
   splitRow: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 8 },
   splitInput: { flex: 1, minHeight: 40, paddingHorizontal: 11, borderWidth: 1, borderColor: palette.line, borderRadius: 8, color: palette.ink, fontSize: 12 },
   addSection: { minHeight: 40, borderRadius: 9, borderWidth: 1, borderColor: '#DAD7EB', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 12 },

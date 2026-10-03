@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Mobile video moment review
+
+- Add local video playback and a touch timeline scrubber to the section-review screen.
+- Let users split a moment at the current playhead or enter an exact time, then decide Edit / Keep / Exclude for each resulting span.
+- Keep section changes in the existing local draft flow; seeking and splitting do not alter the imported media file.
+
 ### Video analysis prototype
 
 - Add an experimental local Python command that proposes adaptive visual cuts and ordered shot spans for clips up to 30 seconds.
