@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Component analysis contract
+
+- Define analysis as a time-aligned component inventory with separately reported coverage for people/subjects, objects/actions, setting/background, camera/layout, on-screen text, speech, music/sounds, creative beats, and source integrity.
+- Version the local Python proposal as schema v2; distinguish shot spans from creative sections and keep shot-only results explicitly partial.
+- Add per-finding provenance, uncertainty, anonymous clip-local entity references, normalized visual regions, and optional segmentation-mask references.
+- Update the end-to-end workflow, mobile screen design, feature map, research, and traceability requirements to show the component map before section decisions.
+
 ### Mobile video moment review
 
 - Add local video playback and a touch timeline scrubber to the section-review screen.

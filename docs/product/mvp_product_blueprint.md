@@ -81,10 +81,10 @@ The user can skip importing a reference by starting with a curated app template.
 - Accountless local creation where feasible; explain and request sign-in only when an account-bound feature such as cloud sync is needed. Provide secure recovery, sign-out, and account deletion if authentication is included.
 - Essential settings for creator defaults, privacy/media retention, accessibility, notification preferences, and help. Request protected-resource and notification permission only in context.
 - Import a local reference video up to 30 seconds; validate duration, format, size, and decodeability before analysis.
-- Analyze candidate scene boundaries, duration, visible text, speech/captions where feasible, and audio timing cues.
+- Analyze the complete time-aligned component inventory: media integrity, shot boundaries, people/objects/actions/background/layout, visible text/marks, speech, music/sound/beat cues, and creative-beat role hypotheses. Show per-signal coverage and uncertainty before the user edits sections; incomplete analysis remains clearly partial with a manual path.
 - Classify the template's creative format and editing intent, allowing multiple tags such as song/beat edit, cinematic/film, action, comedy/funny, storytime, tutorial, and product showcase.
 - Show a reviewable section timeline with uncertain findings clearly marked.
-- Present the detected video as an ordered list of sections with a thumbnail, start/end time, duration, and short description for each.
+- Present the analyzed video as an ordered component map and proposed section list with thumbnails/evidence, timestamps, duration, short descriptions, signal coverage, and uncertainty. Keep shot boundaries distinct from creative sections.
 - For every section, let the user choose **Edit this section**, **Keep this section as-is**, or **Do not include this section**. Make the selected action visible in the section list.
 - Allow users to rename, split, merge, reorder, trim, or mark sections optional before deciding their action.
 - Allow users to remove attached intros/outros, unwanted overlays or segments, repeated footage, blank portions, and unusable partial sections from the template structure.

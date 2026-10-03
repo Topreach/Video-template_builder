@@ -28,7 +28,8 @@ Accordingly, the workflow separates:
 
 - **Boundary proposals:** candidate time ranges derived from measurable media cues.
 - **Section grouping:** the user's chosen reusable pieces, which can span one or more detected shots.
-- **Role labels:** optional interpretations such as hook, setup, reveal, payoff, CTA, lyric/beat, action beat, or explanation. Each is marked as a suggestion and can be changed or left unset.
+- **Component inventory:** required time-aligned observations across visual content, text/marks, speech, music/sound, creative-beat hypotheses, and source-integrity cues. Every analysis pass reports its coverage and processing method.
+- **Role labels:** candidate interpretations such as hook, setup, reveal, payoff, CTA, lyric/beat, action beat, or explanation. Each is a suggestion that can be changed or left unknown.
 - **Template decisions:** user-approved Edit / Keep / Exclude choices, distinct from analysis results.
 
 PySceneDetect documents content/adaptive detectors as cut-finding methods based on differences in adjacent frames; its adaptive method aims to reduce false detections during fast camera motion. These methods are useful candidates for shot boundaries, not story understanding. [PySceneDetect detector documentation](https://www.scenedetect.com/docs/latest/api/detectors.html), [algorithm guide](https://www.scenedetect.com/docs/latest/cli.html#detect-adaptive).
@@ -40,7 +41,7 @@ New
   -> MediaSelected
   -> MediaValidated
   -> AnalysisConsentRecorded
-  -> AnalysisQueued -> Analyzing -> ProposalReady
+  -> AnalysisQueued -> Analyzing -> ComponentInventoryReady
        |                 |              |
        |                 |              +-> ProposalNeedsManualReview
        |                 +-> AnalysisFailed (retry or manual sections)
@@ -77,16 +78,19 @@ Validation rules:
 
 ### 4.2 Analyze and report honestly
 
-Progress shows named work stages such as `Checking file`, `Finding possible cuts`, `Preparing section previews`, and `Ready to review`. Show indeterminate progress unless the selected operation can calculate reliable completion. Provide Cancel and Keep draft actions. On cancellation, stop new work, discard temporary upload data where possible, and retain only the user's local draft and explicitly saved decisions.
+Progress shows named work stages: `Checking the file`, `Finding shot boundaries`, `Identifying people and objects`, `Reading on-screen text`, `Analyzing speech and sound`, `Suggesting creative beats`, `Checking clip integrity`, `Building the component map`, and `Ready to review`. Run only the stages supported/consented for this source, but record a result state for every required pass. Show indeterminate progress unless the selected operation can calculate reliable completion. Provide Cancel and Keep draft actions. On cancellation, stop new work, discard temporary upload data where possible, and retain only the user's local draft and explicitly saved decisions.
 
-Analysis proposal content for the first workflow:
+The analyzer must finish all configured component passes and display a coverage report before the user starts section decisions. It must report, even when unavailable:
 
 - Exact source duration and media facts.
-- Candidate shot boundaries with time, cue type, detector/version, and confidence or uncertainty band.
-- Suggested thumbnails at meaningful points in each candidate range.
-- Optional technical warnings for blank/frozen/abrupt edges and missing/unclear audio.
-- Optional OCR/transcript/audio-beat findings only when the chosen capability is reliable and consented; each result carries timestamp, language/status, source method, and uncertainty.
-- Optional role suggestions with a short explanation. No role is required to proceed.
+- Candidate shot boundaries and contiguous shot spans, kept separate from creative sections, with time, cue, provider/version, and calibrated confidence or explicit uncertainty.
+- Timestamped visual findings for people (anonymous IDs only), objects, actions, setting/background, camera movement, and split-screen/overlay layout, with per-category coverage and evidence.
+- On-screen text, captions and brand-mark candidates with approximate time and region; language/status and uncertainty are explicit.
+- Speech, music, effects, silence and beat candidates, with time ranges and language/status where applicable.
+- Creative-beat/role hypotheses (hook, context, setup, tutorial step, demonstration, action, reaction, reveal, payoff, CTA, lyric/beat, transition or unknown) with a short evidence-based explanation.
+- Source-integrity findings for abrupt start/end, black/frozen frames, decode gaps and other suspected fragment issues. These are warnings, not automatic removal.
+- A coverage report for every pass: completed, partial, not run, unsupported, or failed; method/provider and processing location; counts/evidence where available. Anything incomplete keeps the analysis visibly partial and provides manual review/section creation.
+- Suggested thumbnails/evidence frames at meaningful times. No detector can promise that it found every object, word, sound, or story meaning; all findings remain reviewable.
 
 Initial boundary proposal should combine a fast cut detector with review, rather than require a generative model. Evidence does not support treating any detector as universally reliable for social clips:
 
@@ -100,7 +104,7 @@ PySceneDetect's results also show dataset/transition-type sensitivity: its adapt
 
 **Recommended detector spike:** run PySceneDetect AdaptiveDetector and TransNet V2 on the same permissioned/eligible corpus and evaluation script. Add AutoShot only after confirming usable weights, reproducible inference, license/data terms, and acceptable packaging. Include hard cuts, multi-step wipes/dissolves, flashes, rapid beat edits, picture-in-picture/ternary layouts, camera motion, screen/game capture, VFR, corruption, and no-audio. Annotate boundaries and creative sections separately. Report per-family precision/recall/F1 with stated frame/time tolerance, correction count/time, runtime, peak memory, energy/network transfer, and failure rate. Do not tune on the final holdout set.
 
-For the first usable release, detected cuts are candidate markers only. Keep manual add/split/merge/group/reorder controls independent of detector choice. Do not translate every detected shot into a separate template slot: rapid edits can belong to one creative section, while one uncut shot can contain multiple story sections. No automatic exclusion or story-role classification should ship without separate annotation and user-validation evidence.
+For the first usable release, detected cuts are candidate markers only. Keep manual add/split/merge/group/reorder controls independent of detector choice. Do not translate every detected shot into a separate template slot: rapid edits can belong to one creative section, while one uncut shot can contain multiple story sections. Role output is a user-correctable hypothesis, never an objective classification. No finding triggers automatic exclusion.
 
 If analysis fails or times out, keep the selected local asset and allow **Create sections manually**. Never create fabricated sample boundaries and label them as analysis.
 
@@ -208,7 +212,7 @@ Export MP4 to app-managed temporary storage, verify that the output can be reope
 
 ### Do not make a general MVP promise for
 
-- Correctly identifying every semantic section or attachment.
+- Detecting every component or correctly interpreting every creative section or attached fragment. Analysis must report category coverage and uncertainty rather than promise perfect recognition.
 - Automatic replacement of a real person/character while preserving their performance.
 - Photorealistic background replacement on arbitrary action/motion footage.
 - Copyright clearance from editing or changing audio/text.
@@ -227,15 +231,45 @@ type TimeRange = { startMs: number; endMs: number }; // half-open [start,end)
 type AnalysisProposal = {
   id: string;
   sourceId: string;
-  schemaVersion: number;
+  schemaVersion: 2;
   producer: { name: string; version: string };
   status: 'ready' | 'partial' | 'failed';
+  scope: 'shot-boundaries-only' | 'component-inventory';
   mediaFacts: { durationMs: number; width?: number; height?: number; hasAudio?: boolean };
+  shotSpans: Array<{ id: string; order: number; range: TimeRange; reviewState: 'unreviewed' }>;
   boundaries: Array<{
     atMs: number;
-    origin: 'detector' | 'user';
-    cue: 'visual-cut' | 'fade' | 'audio-change' | 'manual' | 'other';
+    origin: 'detector';
+    cue: 'visual-cut';
     confidence?: number;
+    uncertainty: 'unknown';
+  }>;
+  components: Array<{
+    id: string;
+    track: 'visual' | 'text' | 'audio' | 'creative' | 'integrity';
+    kind: string;
+    range: TimeRange;
+    label: string;
+    summary?: string;
+    roleHypothesis?: string;
+    entityRef?: string;          // anonymous, clip-local continuity only
+    region?: { x: number; y: number; width: number; height: number }; // normalized 0..1
+    maskArtifactRef?: string;    // only when a supported segmentation pass produced one
+    evidenceAtMs?: number;
+    provenance: { origin: string; provider: string; version: string; processing: 'local' | 'server' | 'unknown' };
+    uncertainty: 'low' | 'medium' | 'high' | 'unknown';
+    reviewState: 'unreviewed' | 'accepted' | 'edited' | 'ignored';
+  }>;
+  signalReports: Array<{
+    signal: 'technical-facts' | 'shot-boundaries' | 'people-and-subjects' | 'objects-and-actions' |
+      'setting-and-background' | 'camera-and-layout' | 'on-screen-text' | 'speech' |
+      'music-and-sound' | 'creative-beats' | 'source-integrity';
+    state: 'completed' | 'partial' | 'not-run' | 'unsupported' | 'failed';
+    provider?: string;
+    version?: string;
+    processing?: 'local' | 'server' | 'unknown';
+    evidenceCount: number;
+    note?: string;
   }>;
   warnings: Array<{ code: string; range?: TimeRange; messageKey: string }>;
 };
@@ -272,6 +306,8 @@ Contract rules:
 - Timestamps are integer milliseconds relative to source media and use a documented half-open interval. UI may display frame/timecode precision but must round-trip a valid source time.
 - Source time and template output time are separate. Exclusion/reordering changes output placement, not original source references.
 - `AnalysisProposal` is immutable once displayed; corrections create a user-edited view or new proposal revision.
+- A proposal marked `ready` includes a coverage record for every required signal and has no required pass marked `not-run`, `partial`, or `failed`; a modality absent from the source may be `unsupported`. `ready` describes pass coverage, never perfect detection.
+- Shot spans partition the source timeline. Component findings may overlap each other and shot spans; they never become recipe sections without user grouping and an explicit decision.
 - `TemplateRecipe` contains only user-approved choices; analyzer output does not become recipe data by implicit default.
 - `exclude` can never reach a renderer input plan.
 - Source asset references are indirect IDs/URIs with retention state, not video bytes embedded in recipe JSON.
@@ -376,7 +412,7 @@ Processing location and retention are disclosed. Cancel, deletion, low storage, 
 5. Run the local-vs-ephemeral-server analysis and iOS-vs-Android renderer spikes before committing to those execution models.
 6. Add replacement prompts as transparent, user-approved cards. Defer generated people/backgrounds and any public marketplace.
 
-This sequence produces a useful, testable product even if automatic semantic interpretation or advanced generative replacement is not ready.
+The end state remains a complete component inventory before section review. Delivery can be staged by signal, but each stage must explicitly show missing coverage and leave manual section creation available; a shot-boundary-only prototype is not considered the finished analysis workflow.
 
 ## 11. Sources checked for this specification
 

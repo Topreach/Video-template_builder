@@ -6,7 +6,13 @@
 
 ## 1. Purpose
 
-Specify what the analyzer may observe, how each observation can help a user, what it cannot establish, and what consent/device evidence is required. "Analyze the video" is not one model call. It is a collection of optional signals with different accuracy, platform, privacy, and processing constraints.
+Specify what the analyzer may observe, how each observation can help a user, what it cannot establish, and what consent/device evidence is required. "Analyze the video" is not one model call. It is a collection of signals with different accuracy, platform, privacy, and processing constraints. A comprehensive, time-aligned component inventory is a core product outcome: the user sees what was found (and what could not be analyzed) before deciding which parts to reuse, replace, or exclude.
+
+### Required analysis coverage contract
+
+Every analysis proposal reports each required pass independently: media facts; shot boundaries; people/subjects; objects/actions; setting/background; camera motion/layout (including split-screen and overlays); on-screen text/marks; speech; music/sound (effects, silence and beat candidates); creative beats/role hypotheses; and source integrity (abrupt edges, black/freeze spans and decode problems). Findings use overlapping, timestamped tracks: a camera cut is not automatically a reusable story section, and one creative section may span several shots. Creative roles such as hook, context, setup, tutorial step, demonstration, action, reaction, reveal, payoff, call-to-action, lyric/beat and transition are hypotheses with an `unknown` option, never asserted facts.
+
+Each signal must report `completed`, `partial`, `not-run`, `unsupported` or `failed`, with provider/version and processing location when it ran. A missing, failed, or partial signal keeps the whole inventory visibly partial and offers manual review; unsupported is acceptable only when the source/platform genuinely lacks that modality (for example, no audio). A “complete coverage” state means all defined analysis passes ran; it does not mean every object, word, sound, or creative intent was detected. Findings require evidence/time ranges, honest uncertainty, and user correction. No finding may automatically delete source material or authorize reuse. Person findings must not identify a person or infer sensitive traits.
 
 ### Current implementation checkpoint
 
@@ -23,11 +29,11 @@ Signals describe evidence in the selected media. They do not by themselves estab
 | Media/container facts | Required | Duration, dimensions, rotation, frame timing, audio/video tracks, codec/probe/decode warnings. | The creative intent, clip completeness, rights, or whether a fragment is "attached." | Local metadata probe; block unsupported/corrupt input with recoverable errors. |
 | Shot-boundary score | Required proposal capability | Candidate hard/gradual visual transitions and useful contact-sheet spans. | Creative/story section, semantic event, unwanted content, or accurate boundary on every style. | Compare classical adaptive/content detection against learned short-video detector; user can regroup/correct. |
 | Black/freeze/abrupt edges | Useful warning | Possible gap, stalled frame, abrupt splice/edge, decode loss. | Defect, partial download, attached material, or intent. | Display a warning with source time; no automatic removal. |
-| OCR/on-screen text | Optional first enhancement | Possible overlay/caption/lyric text, approximate timing/location, text-heavy areas. | Correct transcription, source language, speaker, authorship, or that text is intended to remain. | Analyze selected frames around boundaries and stable intervals; let user correct/delete; retain only approved text in recipe. |
-| Speech transcription | Optional after privacy/language decision | Speech text/timing may help dialogue, storytime, tutorial, and caption workflows. | Correct words, speaker identity, emotional tone, safe attribution, or all-language support. | Off by default unless processing path/language is supported and disclosed; user can opt in, edit, or skip. |
-| Audio activity/beat grid | Optional | Approximate sound-active intervals and beat candidates for rhythm-based editing. | Exact musical meter, downbeat, song rights, or that the template should follow a beat. | Start with optional beat candidates; user shifts/toggles; no beat snapping in comedy/dialogue/action by default. |
-| Visual/motion cues | Later/conditional | Shot scale, motion intensity/direction, subject position, broad composition; can inform crop/framing prompts. | A reliable story role, person identity, intended emotion, safe action, or stable object/subject tracking. | Use only a validated cue with narrow explanation; avoid high-level assertions from generic classifiers. |
-| Semantic section/role classification | Research, not a hard dependency | Candidate hook/setup/reveal/payoff/CTA/tutorial-step labels. | Objective ground truth or cross-cultural meaning. | Begin with user-selected format plus editable role tags. Evaluate model suggestions separately on annotated samples. |
+| OCR/on-screen text | Required analysis pass; provider may be unsupported | Possible overlay/caption/lyric text, timing/location and text-heavy areas. | Correct transcription, language, authorship, or whether text should remain. | Report coverage; run an evaluated OCR provider where supported, otherwise mark unavailable. Show evidence and let user correct/delete; save only approved replacement text in the recipe. |
+| Speech transcription | Required analysis pass; opt-in/availability may limit it | Candidate speech spans/text/timing for dialogue, storytime, tutorial and captions. | Correct words, speaker identity, emotion, safe attribution, or all-language support. | Always report status. Transcribe only with disclosed supported processing and consent; if off/unavailable, mark not-run/unsupported and offer manual continuation. |
+| Audio activity/beat grid | Required analysis pass when audio exists | Speech/music/effects/silence spans and beat candidates for rhythm editing. | Exact meter/downbeat, song rights, or that a template should follow a beat. | Report status; offer editable beat candidates. Do not force beat snapping on comedy/dialogue/action. |
+| Visual/motion cues | Required analysis pass | People (anonymous), objects, actions, setting/background, camera motion and layout cues for replacement planning. | Identity, sensitive traits, safe action, intended emotion, or stable tracking in every clip. | Report per-category coverage and uncertainty; use only evaluated cues, never high-level assertions from generic classifiers. |
+| Semantic section/role classification | Required hypothesis pass, user-reviewed | Candidate hook/context/setup/reveal/payoff/CTA/tutorial/action/reaction/lyric-beat/transition labels. | Objective ground truth or cross-cultural meaning. | Include suggestions and `unknown`; evaluate separately on creator categories; never block manual correction or claim factual story understanding. |
 | Personalized replacement matching | Later | Find candidate user-owned clips based on duration, orientation, subject/motion/framing or user tags. | That a match has rights, is semantically appropriate, or should be inserted. | Start with user-directed browsing and shot prompts; add local/private matching only after consent, indexing and quality evidence. |
 
 ## 3. Signal-specific technical research
@@ -69,10 +75,12 @@ Roles and recommendations should be treated as two separate outputs:
 1. **Role hypothesis:** e.g. `hook`, `setup`, `demonstration`, `reveal`, `reaction`, `payoff`, `CTA`, `lyric/beat`, `dialogue`, or `unknown`.
 2. **Replacement prompt:** a practical suggestion explaining what the user could capture/use to preserve or change the section's function.
 
+Published datasets show why this must remain a proposal rather than a promise. VidSitu provides dense event/role annotations over 29,000 ten-second movie clips, which is useful research but does not by itself establish coverage for songs, memes, tutorials, screen recordings, action edits, or mixed short-form clips ([VidSitu paper](https://arxiv.org/abs/2104.00990)). TemporalBench reports substantial difficulty even for strong video models on fine-grained temporal questions; one paper-reported GPT-4o score is 38.5% on its benchmark ([TemporalBench paper](https://arxiv.org/abs/2410.10818)). These are research benchmarks, not expected product accuracy. They support evidence-grounded, timestamped hypotheses and user correction, not a generic “understands every video” claim.
+
 An initial recommendation engine does not need a generative model. A controllable rule/template engine can combine:
 
 - user-selected creative format;
-- optional role chosen/confirmed by the user;
+- role hypothesis confirmed/corrected by the user, or an explicit `unknown` value;
 - section duration and order;
 - visible composition cues the user can see (wide/close, subject position, motion direction) when those cues pass a precision review;
 - user topic/brand brief; and
@@ -86,7 +94,7 @@ Never train on a user's uploads or use them to improve a hosted model unless a s
 
 Pose APIs return landmarks/coordinates, not actions with trustworthy narrative labels. Google's ML Kit Pose Detection documentation marks the API beta and notes device/app-size/performance tradeoffs. Person masks likewise enable a cutout/composite effect, not generation of a replacement character. [ML Kit Pose Detection](https://developers.google.com/ml-kit/vision/pose-detection/android), [Apple person segmentation guidance](https://developer.apple.com/documentation/vision/applying-matte-effects-to-people-in-images-and-video).
 
-Keep these out of core template creation until a use case and quality study justify them. If later used for framing suggestions or visual edits, require temporal stability, confidence, occlusion/crowd/low-light coverage, explicit before/after, per-section scope, undo/restore, and user approval. Do not infer identity, age, ethnicity, attractiveness, disability, or other sensitive characteristics.
+The inventory may report candidate people/pose/background cues only when a provider is supported and evaluated; otherwise it must show that coverage as unavailable. Keep automatic person/background generation and identity-preserving replacement out of core template creation until a separate use case and quality study justify them. Any later framing or visual-edit operation needs temporal-stability, occlusion/crowd/low-light evidence, explicit before/after, per-section scope, undo/restore and user approval. Do not infer identity, age, ethnicity, attractiveness, disability, or other sensitive characteristics.
 
 ## 4. Cross-platform provider rule
 
@@ -114,8 +122,8 @@ Do not persist uncalibrated numeric scores as if they were comparable between pr
 
 - Technical metadata and decode errors.
 - Candidate hard/gradual cut boundaries only after the same-corpus bake-off and manual editing fallback.
-- Optional, clearly labeled blank/freeze/abrupt-edge warnings after false-warning review.
-- Manual creative format and role controls.
+- Clearly labeled blank/freeze/abrupt-edge coverage and findings after false-warning review; no automatic removal.
+- Creative format controls plus evaluated, editable role hypotheses and an `unknown` option.
 - Prompt-based replacements using user-confirmed context; no semantic model required.
 
 ### Add only after a bounded evaluation
@@ -124,9 +132,9 @@ Do not persist uncalibrated numeric scores as if they were comparable between pr
 - Beat markers for opt-in music-edit templates if the benchmark shows timing benefit and users can easily correct them.
 - Speech transcription only after the privacy model, permission UX, launch languages, availability matrix, retention, and cross-platform behavior are decided.
 
-### Keep deferred until separately justified
+### Keep these operations deferred until separately justified
 
-- Automatic story-role assertions.
+- Role hypotheses presented as facts; role suggestions remain user-reviewed and correction-first.
 - General user-library semantic matching or cloud embeddings.
 - Person/character replacement, identity preservation, inferred emotion or sensitive traits.
 - Automatic removal of logos/watermarks/captions/source audio.
@@ -150,7 +158,7 @@ This document elaborates `DEC-004` in the [coverage map](mvp_coverage_and_tracea
 - **OCR:** decide launch scripts and per-platform engine after runtime language support, visual-text corpus and app-size testing.
 - **Speech:** decide whether to omit from MVP or use a common on-device/hosted provider after consent, transmission, languages, permission and retention are documented.
 - **Beats:** decide after annotation/user tests establish beat alignment improves completion for music templates without harming other formats.
-- **Semantic roles:** decide after user research; until then user choice and neutral "unknown" are first-class.
+- **Semantic roles:** role hypotheses and an `unknown` state are required in the product contract; decide the provider/quality thresholds after cross-family evaluation and user research.
 - **Suggestions:** start with deterministic prompt patterns; assess hosted language model value and cost separately, with no media upload required for a prompt if the user can describe the section.
 
 ## 8. Official sources checked 2 October 2026

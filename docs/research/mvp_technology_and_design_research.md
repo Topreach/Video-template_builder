@@ -194,7 +194,7 @@ Template recipes need distinct editable tracks for original source sound, replac
 Separate these durable objects:
 
 - `ReferenceVideo`: source identity, duration/probe result, storage locator, rights acknowledgment, retention/deletion status.
-- `AnalysisProposal`: sections, timestamps, transcript/OCR/audio cues, model/tool versions, confidence, warnings. Recomputable and never mistaken for a user decision.
+- `AnalysisProposal` (schema v2): media facts, detected shot spans/boundaries, overlapping timestamped component findings across visual/text/audio/creative/integrity tracks, per-signal coverage and provenance, uncertainty, and warnings. A cut-only output is explicitly `partial`; proposals are recomputable and never mistaken for a user decision. See [analysis signal strategy](../product/video_analysis_signal_strategy.md#required-analysis-coverage-contract).
 - `TemplateRecipe`: user-confirmed structure, sections, layers, replacement guidance, output profiles, source lineage, schema version.
 - `TemplateVersion`: immutable snapshot/change history after confirmation.
 - `EditSession`: a user filling a recipe with personal assets and overrides.

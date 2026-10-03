@@ -9,7 +9,7 @@ Track requirements and acceptance evidence in the [MVP coverage and traceability
 |---|---|---|---|
 | `discover` | Browse/search curated examples and recipes. | `TemplateRecipe`, catalog repository | Small curated set; optional after core loop proves value |
 | `import` | Select and validate a local video; preview technical facts. | Media asset, permission/storage adapter | Yes |
-| `analysis` | Propose candidate cuts, sections, text/audio cues, confidence. | Versioned `AnalysisProposal`; local/server analysis adapter | Yes; manual fallback required |
+| `analysis` | Build a time-aligned component inventory across shots, visual content, text, audio, creative-beat hypotheses, and source integrity; report coverage and uncertainty. | Versioned `AnalysisProposal`; local/server signal adapters | Yes; complete coverage is the product goal; manual fallback required |
 | `section-review` | Review, split at a playhead or exact time, and edit/keep/exclude moments. | `AnalysisProposal` in, user-approved `TemplateRecipe` out | Yes; product differentiator |
 | `recipe-editor` | Edit reusable media slots, text, audio, and supported visual operations. | Versioned `TemplateRecipe`, capability registry | Yes; constrained operations |
 | `template-library` | Save, reopen, duplicate, revise, and delete private recipes. | Recipe repository and migrations | Yes |
@@ -40,7 +40,7 @@ The isolated Expo candidate is in [`apps/mobile`](../../apps/mobile/README.md). 
 
 - `discover`: screen and sample recipe cards.
 - `import`: iOS/Android library picker, local playback, and a source-duration gate at 30 seconds.
-- `analysis`: a local Python CLI prototype proposes adaptive visual shot boundaries and ordered spans through `AnalysisProposal`; it is not connected to the mobile app and has no calibrated confidence. See [ADR 0003](decisions/0003-experimental-local-shot-analysis.md).
+- `analysis`: a local Python CLI prototype proposes adaptive visual shot boundaries and ordered spans through schema-v2 `AnalysisProposal`; it explicitly reports the inventory as partial and lists unimplemented signal categories. It is not connected to the mobile app and has no calibrated confidence. See [ADR 0003](decisions/0003-experimental-local-shot-analysis.md).
 - `project-drafts`: one active, versioned local draft persists source technical facts, manual section ranges, decisions, and workflow stage; media bytes and picker URIs are excluded. Resume requires source reselection.
 - `section-review`: Local playback focused on a selected moment, timeline seeking, local generated frame previews for up to 16 moments, exact-time or playhead splitting, and explicit Edit/Keep/Exclude choices over the selected clip; choices autosave to the active draft. Automatic analysis is not connected.
 - `recipe-editor`: suggestion and template-preview UI using sample data.

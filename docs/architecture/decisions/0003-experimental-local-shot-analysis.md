@@ -13,8 +13,10 @@ Production analysis location remains open. Sending an imported clip to a server 
 ## Decision
 
 - Add a local CLI-only cut-proposal experiment using PySceneDetect `AdaptiveDetector` with the PyAV input backend.
-- Convert detected shot boundaries into ordered, half-open millisecond ranges in a versioned `AnalysisProposal` contract.
+- Convert detected shot boundaries into ordered, half-open millisecond ranges in schema-v2 `AnalysisProposal` alongside a time-aligned component map and independent per-signal coverage reports.
 - Label every boundary and span as unreviewed, keep uncertainty unknown, and include warnings that these are cuts rather than story sections. Do not emit a confidence percentage.
+- Mark this detector's result `partial` with scope `shot-boundaries-only`; explicitly enumerate the unimplemented subject, object/action, setting/background, camera/layout, OCR, audio, creative-role, and source-integrity passes. A shot-only result must never be represented as full video analysis.
+- Keep analysis findings distinct from user section groupings, decisions, and approved recipe data. Optional entity references are clip-local anonymous IDs; regions are normalized source-frame coordinates; mask references are only populated by a later evaluated segmentation provider.
 - Keep this detector outside the mobile app and do not upload media. This experiment does not physically cut or alter the source file.
 - Pin PySceneDetect below 0.8 because its official API documentation advises that compatibility bound while the API is under development. The headless package is BSD-3-Clause; its OpenCV, PyAV, and codec dependency inventory still needs release review.
 - Revisit the detector and processing location after running the permissioned annotated corpus and comparing correction burden, latency, resource use, privacy, and platform feasibility.
@@ -24,6 +26,7 @@ Production analysis location remains open. Sending an imported clip to a server 
 - Developers can inspect candidate shot segmentation on a local file before choosing a mobile/server adapter.
 - A video with no candidate cuts still produces one full-duration proposed span for manual review.
 - Thresholds are experimental and not calibrated to the product's short-form corpus. No user-facing mobile claim or accuracy promise is allowed.
+- Schema v2 is a developer CLI research payload and replaces the prior v1 output shape. No proposal persistence or mobile consumer exists yet; do not load v1 output as v2 without a deliberate migration/adapter.
 - The Python CLI does not yet satisfy mobile analysis progress/cancel/retry or iOS/Android acceptance requirements.
 
 ## Sources
