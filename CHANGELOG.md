@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Product requirements reconciliation
+
+- Add a consolidated expected-functionality map linking the product-owner workflow to the detailed research, MVP boundaries, open provider decisions, and the current implementation audit.
+- Make the small, app-owned, category-based inspiration catalog part of the MVP; distinguish it from a later public creator marketplace and expand the catalog after the core create/reuse loop works.
+- Summarize the competitive differentiation around component analysis, guided structural reuse, variation, and explainable replacement prompts.
+
 ### Component analysis contract
 
 - Define analysis as a time-aligned component inventory with separately reported coverage for people/subjects, objects/actions, setting/background, camera/layout, on-screen text, speech, music/sounds, creative beats, and source integrity.

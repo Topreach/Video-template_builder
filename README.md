@@ -4,6 +4,8 @@ An early-stage project for analyzing short videos and turning their structure in
 
 ## Project areas
 
+- [`docs/product/expected_functionality_and_research_map.md`](docs/product/expected_functionality_and_research_map.md) - consolidated functionality baseline, MVP/future scope, open decisions, and research links.
+
 - `apps/mobile/` — Expo and React Native iOS/Android MVP candidate. Manual video import/review, recoverable section drafts, and local template recipe storage work; automatic analysis and rendering remain disconnected. See its [README](apps/mobile/README.md) for setup and current limits.
 - `src/videotemplate/` — Python video ingestion, decoding, source description, and template-recipe foundations.
 - `docs/` — product research, design prototype, architecture, and technical contracts.

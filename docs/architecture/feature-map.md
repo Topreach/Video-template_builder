@@ -7,7 +7,7 @@ Track requirements and acceptance evidence in the [MVP coverage and traceability
 
 | Feature ID | User capability | Main dependency/contracts | Initial release |
 |---|---|---|---|
-| `discover` | Browse/search curated examples and recipes. | `TemplateRecipe`, catalog repository | Small curated set; optional after core loop proves value |
+| `discover` | Browse category-based, app-owner-curated starter recipes and inspiration. | `TemplateRecipe`, catalog repository | Small usable starter set is part of MVP; catalog expansion/search tooling can follow the core loop |
 | `import` | Select and validate a local video; preview technical facts. | Media asset, permission/storage adapter | Yes |
 | `analysis` | Build a time-aligned component inventory across shots, visual content, text, audio, creative-beat hypotheses, and source integrity; report coverage and uncertainty. | Versioned `AnalysisProposal`; local/server signal adapters | Yes; complete coverage is the product goal; manual fallback required |
 | `section-review` | Review, split at a playhead or exact time, and edit/keep/exclude moments. | `AnalysisProposal` in, user-approved `TemplateRecipe` out | Yes; product differentiator |

@@ -4,6 +4,7 @@
 **Related research:** [Product strategy and competitive research](../research/product_strategy_and_competitive_research.md), [technology and design research](../research/mvp_technology_and_design_research.md), [mobile frontend design specification](../design/mobile_frontend_design_spec.md), [account/security/monetization/editor scope research](../research/account_security_monetization_and_editor_scope.md), [software evolution and AI change-safety plan](../research/software_evolution_and_ai_change_safety.md)  
 **Detailed workflow:** [Video-to-template workflow specification](video_template_workflow_spec.md)
 **Coverage and implementation tracking:** [MVP coverage and traceability map](mvp_coverage_and_traceability.md)
+**Expected-functionality baseline:** [Product-owner requirements and research crosswalk](expected_functionality_and_research_map.md)
 **Product:** Mobile-first app that analyzes short reference videos, turns them into editable reusable templates, and exports template-based videos for users to download and finish in their preferred editor.
 
 ## 1. Product definition
@@ -78,6 +79,7 @@ The user can skip importing a reference by starting with a curated app template.
 ### Must have
 
 - Mobile onboarding with a clear explanation of reference-video use and a no-virality-guarantee promise.
+- A small, app-owner-curated inspiration hub organized by the target video categories, with a working **Use this template** path. Keep the first catalog intentionally small; grow it after the create/reuse workflow works.
 - Accountless local creation where feasible; explain and request sign-in only when an account-bound feature such as cloud sync is needed. Provide secure recovery, sign-out, and account deletion if authentication is included.
 - Essential settings for creator defaults, privacy/media retention, accessibility, notification preferences, and help. Request protected-resource and notification permission only in context.
 - Import a local reference video up to 30 seconds; validate duration, format, size, and decodeability before analysis.
@@ -116,7 +118,6 @@ The user can skip importing a reference by starting with a curated app template.
 
 ### Should have if validation supports it
 
-- Curated inspiration hub with a small, high-quality starter catalog.
 - Search and filters for goal, category, required footage, duration, and aspect ratio.
 - Creator profile settings for logo, colors, preferred tone, and default call to action.
 - A/B preview of two hook or ending alternatives.
@@ -284,13 +285,13 @@ Interview creators, observe current recreation workflows, test a clickable proto
 
 ### Phase 1 — Private creation loop
 
-Build import, analysis review, recipe editing, replacement media, basic rendering, private save, and reuse. Start with a small set of formats and device targets.
+Build import, full component-analysis review, recipe editing, replacement media, basic rendering, private save, and reuse. Ship the small app-owned, category-based starter catalog in this phase; expand it after the core workflow works. Start with a small set of formats and device targets.
 
 **Exit:** users reliably finish and reuse templates; analysis and export errors are measurable and fixable.
 
-### Phase 2 — Curated inspiration
+### Phase 2 — Expand curated inspiration
 
-Add a small editorial hub with transparent quality, format, footage requirements, freshness, and rights information. Add creator profiles and brand presets if testing shows repeated demand.
+Grow the initial app-owned starter catalog with transparent quality, format, footage requirements, freshness, and rights information. Improve editorial tooling, search, and catalog updates. Add creator profiles and brand presets if testing shows repeated demand.
 
 **Exit:** hub discovery leads to successful first exports and repeat usage.
 

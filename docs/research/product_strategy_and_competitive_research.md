@@ -2,6 +2,7 @@
 
 **Prepared:** 1 October 2026  
 **Purpose:** Align product direction before expanding implementation. This is desk research and product analysis, not user research or legal advice. Competitor features can vary by region, account, platform, and release.
+**Functionality crosswalk:** [Expected application functionality and research map](../product/expected_functionality_and_research_map.md).
 
 ## 1. Product vision
 
