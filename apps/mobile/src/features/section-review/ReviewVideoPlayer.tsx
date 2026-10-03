@@ -10,12 +10,13 @@ type Props = {
   durationSeconds: number;
   onTimeChange: (seconds: number) => void;
   sections: EditableSectionSpan[];
+  selectedSection: EditableSectionSpan | null;
   onThumbnails: (thumbnails: Record<string, VideoThumbnail>) => void;
 };
 
 const maxMomentThumbnails = 16;
 
-export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange, sections, onThumbnails }: Props) {
+export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange, sections, selectedSection, onThumbnails }: Props) {
   const player = useVideoPlayer(uri, (instance) => {
     instance.loop = false;
     instance.timeUpdateEventInterval = 0.1;
@@ -32,6 +33,19 @@ export function ReviewVideoPlayer({ uri, durationSeconds, onTimeChange, sections
   const currentTime = Math.min(durationSeconds, Math.max(0, timeUpdate?.currentTime ?? 0));
 
   useEffect(() => onTimeChange(currentTime), [currentTime, onTimeChange]);
+
+  useEffect(() => {
+    if (!selectedSection) return;
+    player.pause();
+    // expo-video documents currentTime as its cross-platform seek setter.
+    // eslint-disable-next-line react-hooks/immutability
+    player.currentTime = selectedSection.startSeconds;
+    onTimeChange(selectedSection.startSeconds);
+  }, [onTimeChange, player, selectedSection?.id, selectedSection?.startSeconds]);
+
+  useEffect(() => {
+    if (selectedSection && playing.isPlaying && currentTime >= selectedSection.endSeconds) player.pause();
+  }, [currentTime, player, playing.isPlaying, selectedSection?.endSeconds]);
 
   useEffect(() => {
     const videoDuration = sourceLoad?.duration;

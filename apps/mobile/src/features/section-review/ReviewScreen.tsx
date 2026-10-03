@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import type { VideoThumbnail } from 'expo-video';
@@ -24,10 +24,24 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
   const [splitAt, setSplitAt] = useState('');
   const [splitMessage, setSplitMessage] = useState('');
   const [playhead, setPlayhead] = useState(0);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [thumbnails, setThumbnails] = useState<Record<string, VideoThumbnail>>({});
   const pendingCount = sections.filter((section) => !decisions[section.id]).length;
   const sourceDuration = Math.max(sourceVideo?.durationSeconds ?? 0, ...sections.map((section) => section.endSeconds));
+  const selectedSection = sections.find((section) => section.id === selectedSectionId)
+    ?? sections.find((section) => playhead >= section.startSeconds && playhead < section.endSeconds)
+    ?? sections[0]
+    ?? null;
   const canContinue = sections.length > 0 && pendingCount === 0 && includedCount > 0;
+
+  useEffect(() => {
+    if (!sections.length) {
+      setSelectedSectionId(null);
+    } else if (!selectedSectionId || !sections.some((section) => section.id === selectedSectionId)) {
+      const containing = sections.find((section) => playhead >= section.startSeconds && playhead < section.endSeconds);
+      setSelectedSectionId((containing ?? sections[0]).id);
+    }
+  }, [playhead, sections, selectedSectionId]);
 
   const addSplit = () => {
     const seconds = Number(splitAt.trim().replace(',', '.'));
@@ -35,6 +49,7 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
       setSplitMessage('Enter a time inside one of the moments.');
       return;
     }
+    setPlayhead(seconds);
     setSplitAt('');
     setSplitMessage('Moment split. Choose an action for each new part.');
   };
@@ -54,10 +69,10 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
   </View>}>
     <StepLabel number="02">YOUR REMIX MAP</StepLabel>
     <Title>Shape the story.</Title>
-    <Body>Review each moment and choose what to change, keep, or leave out.</Body>
+    <Body>Tap a moment frame to preview that part, then choose what to change, keep, or leave out.</Body>
     {sourceVideo && <>
       <Text style={styles.videoLabel}>REVIEW THE VIDEO | {sourceVideo.fileName}</Text>
-      <ReviewVideoPlayer uri={sourceVideo.uri} durationSeconds={sourceDuration} onTimeChange={setPlayhead} sections={sections} onThumbnails={setThumbnails} />
+      <ReviewVideoPlayer uri={sourceVideo.uri} durationSeconds={sourceDuration} onTimeChange={setPlayhead} sections={sections} selectedSection={selectedSection} onThumbnails={setThumbnails} />
     </>}
     <View style={styles.analysisNote}>
       <Text style={styles.analysisMark}>i</Text>
@@ -79,19 +94,24 @@ export function ReviewScreen({ sections, decisions, onDecision, onSplitAt, inclu
         const color = sectionColors[index % sectionColors.length];
         const start = section.startSeconds;
         const end = section.endSeconds;
-        return <View key={section.id} style={[styles.card, selected === 'exclude' && styles.cardExcluded]}>
-          <View style={[styles.thumb, !thumbnails[section.id] && { backgroundColor: color }]}>
+        return <View key={section.id} style={[styles.card, selectedSection?.id === section.id && styles.cardFocused, selected === 'exclude' && styles.cardExcluded]}>
+          <Pressable
+            onPress={() => setSelectedSectionId(section.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Preview moment ${index + 1}, ${formatTimecode(start)} to ${formatTimecode(end)}`}
+            accessibilityState={{ selected: selectedSection?.id === section.id }}
+            style={[styles.thumb, !thumbnails[section.id] && { backgroundColor: color }]}>
             {thumbnails[section.id] && <Image source={thumbnails[section.id]} style={styles.thumbImage} contentFit="cover" accessibilityLabel={`Video frame from moment ${index + 1}`} />}
             <View style={styles.thumbShade} />
             <Text style={styles.thumbIndex}>{String(index + 1).padStart(2, '0')}</Text>
             <Text style={styles.thumbTime}>{formatTimecode(start)}</Text>
-          </View>
+          </Pressable>
           <View style={styles.cardBody}>
             <View style={styles.cardTitleRow}>
               <Text style={styles.cardTitle}>Moment {index + 1}</Text>
               <Text style={styles.time}>{formatTimecode(start)}-{formatTimecode(end)}</Text>
             </View>
-            <Text style={styles.description}>Set by you. Confirm whether to edit, keep, or exclude this moment.</Text>
+            <Text style={styles.description}>{selectedSection?.id === section.id ? 'Previewing this moment. Playback stops at its end.' : 'Tap its frame to preview this moment.'}</Text>
             <Text style={[styles.certainty, styles.uncertain]}>Manual boundary | confirm timing</Text>
             <View style={styles.decisions}>
               {(['edit', 'keep', 'exclude'] as const).map((decision) => <Pressable
@@ -133,6 +153,7 @@ const styles = StyleSheet.create({
   segment: { borderRadius: 4 },
   sectionList: { gap: 8 },
   card: { flexDirection: 'row', gap: 9, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#ECEBF1', borderRadius: 13, padding: 8 },
+  cardFocused: { borderColor: palette.accent, backgroundColor: '#FAF9FF' },
   cardExcluded: { opacity: .55, backgroundColor: '#F3F3F5' },
   thumb: { width: 53, minHeight: 94, borderRadius: 9, justifyContent: 'flex-end', alignItems: 'center', overflow: 'hidden' },
   thumbImage: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
